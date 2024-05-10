@@ -173,3 +173,15 @@ func Many1[T any](parser Parser[T]) Parser[[]T] {
 		}
 	}
 }
+
+//func TakeCharWhile(f func(r rune) bool) Parser[string] {
+//	return func(in *Input) Result[string] {
+//		for !in.End() {
+//			if f(in.NextChar()) {
+//				in.Advance()
+//			} else {
+//				break
+//			}
+//		}
+//	}
+//}
