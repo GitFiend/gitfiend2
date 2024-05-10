@@ -156,3 +156,4 @@ dist
 # Go workspace file
 go.work
 
+!/gitfiend2
