@@ -6,24 +6,6 @@ import (
 	"time"
 )
 
-type Number interface {
-	int | uint | float64 | float32
-}
-
-func Min[T Number](a, b T) T {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func Max[T Number](a, b T) T {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 // PseudoUuid
 // Note - NOT RFC4122 compliant
 func PseudoUuid() (uuid string) {
