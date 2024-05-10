@@ -1,4 +1,4 @@
-package gitTypes
+package git
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ func TestLoadCommits(t *testing.T) {
 
 	defer core.Elapsed("LoadCommits")()
 
-	res := LoadCommits(GitOptions{RepoPath: `/home/toby/Repos/vscode`}, 5000)
+	res := LoadCommits(RunOpts{RepoPath: `/home/toby/Repos/vscode`}, 5000)
 
 	println(len(res))
 }

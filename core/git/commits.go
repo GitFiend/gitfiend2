@@ -1,4 +1,4 @@
-package gitTypes
+package git
 
 import (
 	"gitfiend2/core"
@@ -103,7 +103,7 @@ var PCommits = Many(PCommitRow)
 
 // LoadCommits
 // Intentional copy of options, so we can modify it.
-func LoadCommits(options GitOptions, num uint) []Commit {
+func LoadCommits(options RunOpts, num uint) []Commit {
 	print(os.Environ())
 
 	options.Args = []string{
@@ -117,15 +117,13 @@ func LoadCommits(options GitOptions, num uint) []Commit {
 		"--date=raw",
 	}
 
-	textResult := RunGit(options)
-
-	if len(textResult) > 0 {
-		defer core.Elapsed("Parse commits")()
-
-		res := Parse(PCommits, textResult)
-
-		return res.Value
+	textResult, err := RunGit(options)
+	if err != nil {
+		return nil
 	}
 
-	return nil
+	defer core.Elapsed("Parse commits")()
+	res := Parse(PCommits, textResult.Stdout)
+
+	return res.Value
 }

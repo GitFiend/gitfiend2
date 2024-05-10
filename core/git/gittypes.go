@@ -1,4 +1,4 @@
-package gitTypes
+package git
 
 type RefInfoPart struct {
 	Id         string

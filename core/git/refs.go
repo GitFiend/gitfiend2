@@ -1,4 +1,4 @@
-package gitTypes
+package git
 
 import (
 	. "gitfiend2/core/parser"

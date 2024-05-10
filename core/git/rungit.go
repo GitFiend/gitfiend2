@@ -1,21 +1,36 @@
-package gitTypes
+package git
 
 import (
+	"bytes"
 	"os/exec"
 )
 
-type GitOptions struct {
+type RunOpts struct {
 	Args      []string
 	RepoPath  string
 	Timeout   bool
 	ShowError bool
 }
 
-func RunGit(options GitOptions) string {
+type RunResult struct {
+	Stdout string
+	Stderr string
+}
+
+func RunGit(options RunOpts) (RunResult, error) {
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
 	cmd := exec.Command("git", options.Args...)
-
 	cmd.Dir = options.RepoPath
-	stdoutStderr, _ := cmd.CombinedOutput()
 
-	return string(stdoutStderr)
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+
+	if err != nil {
+		return RunResult{}, err
+	}
+
+	return RunResult{Stdout: stdout.String(), Stderr: stderr.String()}, nil
 }

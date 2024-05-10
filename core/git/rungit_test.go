@@ -1,4 +1,4 @@
-package gitTypes
+package git
 
 import (
 	"os"
@@ -12,12 +12,12 @@ func TestRunGit(t *testing.T) {
 		t.Error("os.Getwd() failed")
 	}
 
-	res := RunGit(GitOptions{
+	runResult, err := RunGit(RunOpts{
 		Args:     []string{"--version"},
 		RepoPath: path,
 	})
 
-	if len(res) == 0 {
+	if err != nil || runResult.Stdout == "" {
 		t.Error("Expected result test, got nothing.")
 	}
 }
