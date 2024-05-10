@@ -1,7 +1,6 @@
 package git
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
@@ -29,20 +28,23 @@ func LoadGitVersion() {
 		return
 	}
 
-	// TODO
-	fmt.Println(res)
+	Version = ParseGitVersion(res.Stdout)
 }
 
 func ParseGitVersion(s string) VersionInfo {
 	i := strings.IndexFunc(s, func(r rune) bool {
 		return unicode.IsDigit(r)
 	})
-	j := strings.LastIndexFunc(s[i:], func(r rune) bool {
-		return unicode.IsDigit(r)
-	})
 
-	sub := s[i : i+j+1]
+	j := i
+	for _, c := range s[i:] {
+		if !unicode.IsDigit(c) && c != '.' {
+			break
+		}
+		j++
+	}
 
+	sub := s[i:j]
 	parts := strings.Split(sub, ".")
 
 	major, _ := strconv.Atoi(parts[0])
