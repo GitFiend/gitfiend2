@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"gitfiend2/core/input"
 	"regexp"
 	"unicode"
 )
@@ -14,7 +13,7 @@ var AnyWord = Regex(regexp.MustCompile(`\w+`))
 var Uint = uintParser()
 
 func uintParser() Parser[string] {
-	return func(in *input.Input) Result[string] {
+	return func(in *Input) Result[string] {
 		var parts []rune
 
 		for !in.End() {

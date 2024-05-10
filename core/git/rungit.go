@@ -1,4 +1,4 @@
-package runGit
+package gitTypes
 
 import (
 	"os/exec"

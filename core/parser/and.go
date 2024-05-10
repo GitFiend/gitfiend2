@@ -1,13 +1,11 @@
 package parser
 
-import "gitfiend2/core/input"
-
 type And1Result[A any] struct {
 	A A
 }
 
 func And1[A any](a Parser[A]) Parser[And1Result[A]] {
-	return func(in *input.Input) Result[And1Result[A]] {
+	return func(in *Input) Result[And1Result[A]] {
 		start := in.Position
 		resA := a(in)
 		fail := Result[And1Result[A]]{Failed: true}
@@ -34,7 +32,7 @@ type And2Result[
 }
 
 func And2[A any, B any](a Parser[A], b Parser[B]) Parser[And2Result[A, B]] {
-	return func(in *input.Input) Result[And2Result[A, B]] {
+	return func(in *Input) Result[And2Result[A, B]] {
 		fail := Result[And2Result[A, B]]{Failed: true}
 		start := in.Position
 
@@ -68,7 +66,7 @@ type And3Result[
 func And3[A any, B any, C any](
 	a Parser[A], b Parser[B], c Parser[C],
 ) Parser[And3Result[A, B, C]] {
-	return func(in *input.Input) Result[And3Result[A, B, C]] {
+	return func(in *Input) Result[And3Result[A, B, C]] {
 		start := in.Position
 		resA := a(in)
 
@@ -115,7 +113,7 @@ func And4[
 	c Parser[C],
 	d Parser[D],
 ) Parser[And4Result[A, B, C, D]] {
-	return func(in *input.Input) Result[And4Result[A, B, C, D]] {
+	return func(in *Input) Result[And4Result[A, B, C, D]] {
 		start := in.Position
 		resA := a(in)
 
@@ -174,7 +172,7 @@ func And5[
 	d Parser[D],
 	e Parser[E],
 ) Parser[And5Result[A, B, C, D, E]] {
-	return func(in *input.Input) Result[And5Result[A, B, C, D, E]] {
+	return func(in *Input) Result[And5Result[A, B, C, D, E]] {
 		start := in.Position
 		resA := a(in)
 
@@ -242,7 +240,7 @@ func And6[
 	e Parser[E],
 	f Parser[F],
 ) Parser[And6Result[A, B, C, D, E, F]] {
-	return func(in *input.Input) Result[And6Result[A, B, C, D, E, F]] {
+	return func(in *Input) Result[And6Result[A, B, C, D, E, F]] {
 		start := in.Position
 		resA := a(in)
 
@@ -319,7 +317,7 @@ func And7[
 	f Parser[F],
 	g Parser[G],
 ) Parser[And7Result[A, B, C, D, E, F, G]] {
-	return func(in *input.Input) Result[And7Result[A, B, C, D, E, F, G]] {
+	return func(in *Input) Result[And7Result[A, B, C, D, E, F, G]] {
 		start := in.Position
 		resA := a(in)
 
@@ -405,7 +403,7 @@ func And8[
 	g Parser[G],
 	h Parser[H],
 ) Parser[And8Result[A, B, C, D, E, F, G, H]] {
-	return func(in *input.Input) Result[And8Result[A, B, C, D, E, F, G, H]] {
+	return func(in *Input) Result[And8Result[A, B, C, D, E, F, G, H]] {
 		start := in.Position
 		resA := a(in)
 
@@ -500,7 +498,7 @@ func And9[
 	h Parser[H],
 	i Parser[I],
 ) Parser[And9Result[A, B, C, D, E, F, G, H, I]] {
-	return func(in *input.Input) Result[And9Result[A, B, C, D, E, F, G, H, I]] {
+	return func(in *Input) Result[And9Result[A, B, C, D, E, F, G, H, I]] {
 		start := in.Position
 		resA := a(in)
 
@@ -604,7 +602,7 @@ func And10[
 	i Parser[I],
 	j Parser[J],
 ) Parser[And10Result[A, B, C, D, E, F, G, H, I, J]] {
-	return func(in *input.Input) Result[And10Result[A, B, C, D, E, F, G, H, I, J]] {
+	return func(in *Input) Result[And10Result[A, B, C, D, E, F, G, H, I, J]] {
 		start := in.Position
 		resA := a(in)
 
@@ -717,7 +715,7 @@ func And11[
 	j Parser[J],
 	k Parser[K],
 ) Parser[And11Result[A, B, C, D, E, F, G, H, I, J, K]] {
-	return func(in *input.Input) Result[And11Result[A, B, C, D, E, F, G, H, I, J, K]] {
+	return func(in *Input) Result[And11Result[A, B, C, D, E, F, G, H, I, J, K]] {
 		start := in.Position
 		resA := a(in)
 
@@ -840,7 +838,7 @@ func And12[
 	k Parser[K],
 	l Parser[L],
 ) Parser[And12Result[A, B, C, D, E, F, G, H, I, J, K, L]] {
-	return func(in *input.Input) Result[And12Result[A, B, C, D, E, F, G, H, I, J, K, L]] {
+	return func(in *Input) Result[And12Result[A, B, C, D, E, F, G, H, I, J, K, L]] {
 		start := in.Position
 		resA := a(in)
 
@@ -971,7 +969,7 @@ func And13[
 	l Parser[L],
 	m Parser[M],
 ) Parser[And13Result[A, B, C, D, E, F, G, H, I, J, K, L, M]] {
-	return func(in *input.Input) Result[And13Result[A, B, C, D, E, F, G, H, I, J, K, L, M]] {
+	return func(in *Input) Result[And13Result[A, B, C, D, E, F, G, H, I, J, K, L, M]] {
 		start := in.Position
 		resA := a(in)
 
@@ -1111,7 +1109,7 @@ func And14[
 	m Parser[M],
 	n Parser[N],
 ) Parser[And14Result[A, B, C, D, E, F, G, H, I, J, K, L, M, N]] {
-	return func(in *input.Input) Result[And14Result[A, B, C, D, E, F, G, H, I, J, K, L, M, N]] {
+	return func(in *Input) Result[And14Result[A, B, C, D, E, F, G, H, I, J, K, L, M, N]] {
 		start := in.Position
 		resA := a(in)
 
@@ -1260,7 +1258,7 @@ func And15[
 	n Parser[N],
 	o Parser[O],
 ) Parser[And15Result[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O]] {
-	return func(in *input.Input) Result[And15Result[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O]] {
+	return func(in *Input) Result[And15Result[A, B, C, D, E, F, G, H, I, J, K, L, M, N, O]] {
 		start := in.Position
 		resA := a(in)
 

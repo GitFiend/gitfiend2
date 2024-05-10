@@ -1,12 +1,11 @@
 package parser
 
 import (
-	"gitfiend2/core/input"
 	"regexp"
 )
 
 func Char(c rune) Parser[rune] {
-	return func(in *input.Input) Result[rune] {
+	return func(in *Input) Result[rune] {
 		if !in.End() {
 			n := in.NextChar()
 
@@ -21,7 +20,7 @@ func Char(c rune) Parser[rune] {
 }
 
 func Word(word string) Parser[string] {
-	return func(in *input.Input) Result[string] {
+	return func(in *Input) Result[string] {
 		p := in.Position
 
 		for _, c := range word {
@@ -40,7 +39,7 @@ func Word(word string) Parser[string] {
 // Regex
 // var re *regexp.Regexp = regexp.MustCompile(`^[a-z]+\[[0-9]+\]$`)
 func Regex(re *regexp.Regexp) Parser[string] {
-	return func(i *input.Input) Result[string] {
+	return func(i *Input) Result[string] {
 		code := i.Code[i.Position:]
 		match := re.FindStringIndex(code)
 
@@ -56,7 +55,7 @@ func Regex(re *regexp.Regexp) Parser[string] {
 }
 
 func OptionalWhiteSpace[T any]() Parser[T] {
-	return func(in *input.Input) Result[T] {
+	return func(in *Input) Result[T] {
 		for !in.End() && IsWhiteSpace(in.NextChar()) {
 			in.Advance()
 		}
@@ -80,7 +79,7 @@ func RepSep[T any](parser Parser[T], separator string) Parser[[]T] {
 
 // RepParserSep Doesn't require a result.
 func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]T] {
-	return func(in *input.Input) Result[[]T] {
+	return func(in *Input) Result[[]T] {
 		var results []T
 
 		for !in.End() {
@@ -112,7 +111,7 @@ func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]
 // Until
 // Input is consumed including str, but str is not included in the result.
 func Until(str string) Parser[string] {
-	return func(in *input.Input) Result[string] {
+	return func(in *Input) Result[string] {
 		strLen := len(str)
 		startPos := in.Position
 
@@ -135,7 +134,7 @@ func Until(str string) Parser[string] {
 }
 
 func Many[T any](parser Parser[T]) Parser[[]T] {
-	return func(in *input.Input) Result[[]T] {
+	return func(in *Input) Result[[]T] {
 		var results []T
 
 		for !in.End() {
@@ -155,7 +154,7 @@ func Many[T any](parser Parser[T]) Parser[[]T] {
 }
 
 func Many1[T any](parser Parser[T]) Parser[[]T] {
-	return func(in *input.Input) Result[[]T] {
+	return func(in *Input) Result[[]T] {
 		var results []T
 
 		for !in.End() {

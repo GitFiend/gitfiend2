@@ -1,10 +1,9 @@
-package queries
+package gitTypes
 
 import (
 	"fmt"
-	"gitfiend2/core/git/runGit"
+	"gitfiend2/core"
 	"gitfiend2/core/parser"
-	"gitfiend2/core/util"
 	"testing"
 )
 
@@ -28,9 +27,9 @@ func TestPCommitRow(t *testing.T) {
 func TestLoadCommits(t *testing.T) {
 	//dir, _ := os.Getwd()
 
-	defer util.Elapsed("LoadCommits")()
+	defer core.Elapsed("LoadCommits")()
 
-	res := LoadCommits(runGit.GitOptions{RepoPath: `/home/toby/Repos/vscode`}, 5000)
+	res := LoadCommits(GitOptions{RepoPath: `/home/toby/Repos/vscode`}, 5000)
 
 	println(len(res))
 }

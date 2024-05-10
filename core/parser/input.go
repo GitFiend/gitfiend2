@@ -1,7 +1,7 @@
-package input
+package parser
 
 import (
-	"gitfiend2/core/util"
+	"gitfiend2/core"
 )
 
 type Input struct {
@@ -40,7 +40,7 @@ func (in *Input) NextChar() rune {
 }
 
 func (in *Input) Rest(chunkLength int) string {
-	return in.Code[in.Position:util.Min(len(in.Code), in.Position+chunkLength)]
+	return in.Code[in.Position:core.Min(len(in.Code), in.Position+chunkLength)]
 }
 
 func (in *Input) SuccessfullyParsed() string {

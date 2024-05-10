@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"gitfiend2/core/input"
 	"testing"
 )
 
@@ -116,7 +115,7 @@ func TestRepParserSep(t *testing.T) {
 func TestUntil(t *testing.T) {
 	t.Run(
 		`Returns everything before "omg"`, func(t *testing.T) {
-			in := input.Input{Code: "abcdefghijklmnomg"}
+			in := Input{Code: "abcdefghijklmnomg"}
 			res := Until("omg")(&in)
 
 			if res.Failed {
@@ -133,7 +132,7 @@ func TestUntil(t *testing.T) {
 
 	t.Run(
 		`Doesn't go out of bounds if not found`, func(t *testing.T) {
-			in := input.Input{Code: "abcdefghijklmn"}
+			in := Input{Code: "abcdefghijklmn"}
 			res := Until("omg")(&in)
 
 			if !res.Failed {

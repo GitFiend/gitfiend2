@@ -1,7 +1,6 @@
-package refs
+package gitTypes
 
 import (
-	. "gitfiend2/core/git"
 	. "gitfiend2/core/parser"
 	"regexp"
 	"strings"

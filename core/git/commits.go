@@ -1,17 +1,14 @@
-package queries
+package gitTypes
 
 import (
-	. "gitfiend2/core/git"
-	. "gitfiend2/core/git/queries/refs"
-	"gitfiend2/core/git/runGit"
+	"gitfiend2/core"
 	. "gitfiend2/core/parser"
-	"gitfiend2/core/util"
 	"os"
 	"regexp"
 	"strconv"
 )
 
-var End = util.PseudoUuid()
+var End = core.PseudoUuid()
 
 /**
  * %an author name
@@ -106,7 +103,7 @@ var PCommits = Many(PCommitRow)
 
 // LoadCommits
 // Intentional copy of options, so we can modify it.
-func LoadCommits(options runGit.GitOptions, num uint) []Commit {
+func LoadCommits(options GitOptions, num uint) []Commit {
 	print(os.Environ())
 
 	options.Args = []string{
@@ -120,10 +117,10 @@ func LoadCommits(options runGit.GitOptions, num uint) []Commit {
 		"--date=raw",
 	}
 
-	textResult := runGit.RunGit(options)
+	textResult := RunGit(options)
 
 	if len(textResult) > 0 {
-		defer util.Elapsed("Parse commits")()
+		defer core.Elapsed("Parse commits")()
 
 		res := Parse(PCommits, textResult)
 

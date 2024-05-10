@@ -1,7 +1,6 @@
-package refs
+package gitTypes
 
 import (
-	gitTypes "gitfiend2/core/git"
 	"gitfiend2/core/parser"
 	"testing"
 )
@@ -9,7 +8,7 @@ import (
 func TestGetRefLocation(t *testing.T) {
 	origin := getRefLocation([]string{"refs", "heads", "commit-list-experiments"})
 
-	if origin != gitTypes.Local {
+	if origin != Local {
 		t.Error("Expected local ref")
 	}
 }
