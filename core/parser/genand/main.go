@@ -2,38 +2,28 @@ package main
 
 import (
 	"fmt"
-	"go/format"
+	"os"
 	"strings"
 )
 
 func main() {
-	//num := 5
-	//
-	//for i := range make([]int, num) {
-	//	n := i + 1
-	//
-	//	t := makeType(n)
-	//	makeFunc(n)
-	//
-	//	fmt.Println(t)
-	//}
+	num := 15
+	code := ""
 
-	out := makeType(3) + "\n" + makeFunc(3)
-
-	fmt.Println(out)
-
-	code, err := format.Source([]byte(out))
-
-	if err != nil {
-		text := string(code)
-
-		fmt.Println(text)
-	} else {
-		fmt.Println(err)
-		fmt.Println("BAD!!!!!")
+	for i := range make([]int, num) {
+		n := i + 1
+		code += makeBoth(n)
 	}
 
-	//makeFunc(3)
+	err := os.WriteFile("core/parser/generatedand.go", []byte("package parser\n\n"+code), 0644)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func makeBoth(num int) string {
+	return makeType(num) + "\n" + makeFunc(num) + "\n"
 }
 
 func makeType(num int) string {
@@ -45,7 +35,7 @@ func makeType(num int) string {
 	for i := range r {
 		n := i + 1
 		typeArgs += fmt.Sprintf("T%d any,\n", n)
-		inner += fmt.Sprintf("	T%d T%d\n", n, n)
+		inner += fmt.Sprintf("	R%d T%d\n", n, n)
 	}
 
 	code := fmt.Sprintf("type And%dResult[%s] struct {\n	%s\n}", num, typeArgs, strings.TrimSpace(inner))
@@ -90,7 +80,7 @@ func makeFunc(num int) string {
 	for i := range make([]int, num) {
 		n := i + 1
 
-		success += fmt.Sprintf("T%d: res%d,\n", n, n)
+		success += fmt.Sprintf("R%d: res%d,\n", n, n)
 		closing += "}"
 	}
 

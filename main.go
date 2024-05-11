@@ -11,6 +11,9 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:generate go run core/parser/genand/main.go
+//go:generate gofmt -w core/parser
+
 func main() {
 	// Create an instance of the app structure
 	app := NewApp()

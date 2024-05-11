@@ -62,13 +62,13 @@ func getRemoteName(refParts []string) string {
 
 var PTagRef = Map(
 	And2(Word(`tag: `), PRefName), func(result And2Result[string, RefInfoPart]) RefInfoPart {
-		return result.B
+		return result.R2
 	},
 )
 
 var PHeadRef = Map(
 	And2(Word(`HEAD -> `), PRefName), func(result And2Result[string, RefInfoPart]) RefInfoPart {
-		return result.B
+		return result.R2
 	},
 )
 
@@ -77,7 +77,7 @@ var PCommitRef = Or(PHeadRef, PTagRef, PRefName)
 var PCommitRefs = Map(
 	And3(Char('('), RepSep(PCommitRef, ","), Char(')')),
 	func(result And3Result[rune, []RefInfoPart, rune]) []RefInfoPart {
-		return result.B
+		return result.R2
 	},
 )
 

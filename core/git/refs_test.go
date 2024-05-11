@@ -40,44 +40,44 @@ func TestGetRemoteName(t *testing.T) {
 }
 
 func TestPRefName(t *testing.T) {
-	res := parser.Parse(PRefName, "refs/heads/git-lib")
+	_, ok := parser.Parse(PRefName, "refs/heads/git-lib")
 
-	if res.Failed {
+	if !ok {
 		t.Error(`Expected parser success`)
 	}
 }
 
 func TestPTagRef(t *testing.T) {
-	res := parser.Parse(PTagRef, `tag: refs/tags/v0.11.2`)
+	_, ok := parser.Parse(PTagRef, `tag: refs/tags/v0.11.2`)
 
-	if res.Failed {
+	if !ok {
 		t.Error(`Expected parser success`)
 	}
 }
 
 func TestPHeadRef(t *testing.T) {
-	res := parser.Parse(PHeadRef, `HEAD -> refs/heads/master`)
+	res, ok := parser.Parse(PHeadRef, `HEAD -> refs/heads/master`)
 
-	if res.Failed {
+	if !ok {
 		t.Error(`Expected parse success`)
 	}
-	if res.Value.Id != `refs/heads/master` {
-		t.Error(`Expected "refs/heads/master", got ` + res.Value.Id)
+	if res.Id != `refs/heads/master` {
+		t.Error(`Expected "refs/heads/master", got ` + res.Id)
 	}
 }
 
 func TestPCommitRefs(t *testing.T) {
 	a := `(HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD)`
 
-	res := parser.Parse(PCommitRefs, a)
+	res, ok := parser.Parse(PCommitRefs, a)
 
-	if res.Failed {
+	if !ok {
 		t.Error(`Expected success`)
 	}
-	if len(res.Value) != 3 {
+	if len(res) != 3 {
 		t.Error(`Expected 3 refs`)
 	}
-	if res.Value[1].Id != `refs/remotes/origin/master` {
+	if res[1].Id != `refs/remotes/origin/master` {
 		t.Error(`Expected 2nd ref id match`)
 	}
 }
@@ -86,15 +86,15 @@ func TestPOptionalRefs(t *testing.T) {
 	t.Run(
 		`Parse 2 refs`, func(t *testing.T) {
 			a := `(HEAD -> refs/heads/master, refs/remotes/origin/master)`
-			res := parser.Parse(POptionalRefs, a)
+			res, ok := parser.Parse(POptionalRefs, a)
 
-			if res.Failed {
+			if !ok {
 				t.Error(`Expected success`)
 			}
-			if len(res.Value) != 2 {
+			if len(res) != 2 {
 				t.Error(`Expected 2 refs`)
 			}
-			if res.Value[0].Id != `refs/heads/master` {
+			if res[0].Id != `refs/heads/master` {
 				t.Error(`Expected first ref id match`)
 			}
 		},
@@ -103,15 +103,15 @@ func TestPOptionalRefs(t *testing.T) {
 	t.Run(
 		`Parse 3 refs`, func(t *testing.T) {
 			a := `(HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD)`
-			res := parser.Parse(POptionalRefs, a)
+			res, ok := parser.Parse(POptionalRefs, a)
 
-			if res.Failed {
+			if !ok {
 				t.Error(`Expected success`)
 			}
-			if len(res.Value) != 3 {
+			if len(res) != 3 {
 				t.Error(`Expected 3 refs`)
 			}
-			if res.Value[1].Id != `refs/remotes/origin/master` {
+			if res[1].Id != `refs/remotes/origin/master` {
 				t.Error(`Expected 2nd ref id match`)
 			}
 		},

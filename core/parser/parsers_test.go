@@ -7,23 +7,23 @@ import (
 func TestChar(t *testing.T) {
 	cParser := Char('c')
 
-	res := Parse(cParser, "c")
+	res, _ := Parse(cParser, "c")
 
-	if res.Value != 'c' {
-		t.Errorf("Expected c, got %c", res.Value)
+	if res != 'c' {
+		t.Errorf("Expected c, got %c", res)
 	}
 
-	res2 := Parse(cParser, "d")
+	res2, _ := Parse(cParser, "d")
 
-	if res2.Value != rune(0) {
-		t.Error("Expected empty result, got ", res2.Value)
+	if res2 != rune(0) {
+		t.Error("Expected empty result, got ", res2)
 	}
 
 	t.Run(
 		`Fails when there's no input (rather than panic)'`, func(t *testing.T) {
-			res := Parse(cParser, "")
+			_, ok := Parse(cParser, "")
 
-			if !res.Failed {
+			if ok {
 				t.Error(`Expected parse failure with no input`)
 			}
 		},
@@ -37,9 +37,9 @@ func TestMapOnCharParser(t *testing.T) {
 		},
 	)
 
-	res := Parse(dParser, "d")
+	res, _ := Parse(dParser, "d")
 
-	if res.Value != "d" {
+	if res != "d" {
 		t.Error("Expected \"d\" , got ", res)
 	}
 }
@@ -49,9 +49,9 @@ func TestWord(t *testing.T) {
 		`Parse omg`, func(t *testing.T) {
 			wParser := Word("omg")
 
-			res := Parse(wParser, "omg")
+			res, _ := Parse(wParser, "omg")
 
-			if res.Value != "omg" {
+			if res != "omg" {
 				t.Error("Expected \"omg\", got \"", res, "\"")
 			}
 		},
@@ -59,9 +59,9 @@ func TestWord(t *testing.T) {
 
 	t.Run(
 		"Word parsing doesn't go out of bounds", func(t *testing.T) {
-			res := Parse(Word("omgg"), "omg")
+			_, ok := Parse(Word("omgg"), "omg")
 
-			if !res.Failed {
+			if ok {
 				t.Error("Expected this to fail (also not panic).")
 			}
 		},
@@ -71,9 +71,9 @@ func TestWord(t *testing.T) {
 func TestOptionalWhiteSpace(t *testing.T) {
 	t.Run(
 		"Parses single space", func(t *testing.T) {
-			res := Parse(Ws, " ")
+			_, ok := Parse(Ws, " ")
 
-			if res.Failed {
+			if !ok {
 				t.Error("Whitespace parser should always succeed")
 			}
 		},
@@ -81,13 +81,13 @@ func TestOptionalWhiteSpace(t *testing.T) {
 
 	t.Run(
 		"Parses single space and then another parser", func(t *testing.T) {
-			res := Parse(And2(Ws, Char('c')), " c")
+			res, _ := Parse(And2(Ws, Char('c')), " c")
 
-			if res.Value.A != "" {
+			if res.R1 != "" {
 				t.Error("Failed to get whitespace result")
 			}
 
-			if res.Value.B != 'c' {
+			if res.R2 != 'c' {
 				t.Error("Failed to get c")
 			}
 		},
@@ -95,9 +95,9 @@ func TestOptionalWhiteSpace(t *testing.T) {
 
 	t.Run(
 		"Gets to the end of input and doesn't panic", func(t *testing.T) {
-			res := Parse(Ws, "   ")
+			_, ok := Parse(Ws, "   ")
 
-			if res.Failed {
+			if !ok {
 				t.Error(`White space parser failed on "   "`)
 			}
 		},
@@ -105,9 +105,9 @@ func TestOptionalWhiteSpace(t *testing.T) {
 }
 
 func TestRepParserSep(t *testing.T) {
-	res := Parse(RepParserSep(Char('a'), Char(',')), "a,a,a")
+	_, ok := Parse(RepParserSep(Char('a'), Char(',')), "a,a,a")
 
-	if res.Failed {
+	if !ok {
 		t.Error(`Failed to parse "a,a,a"`)
 	}
 }
@@ -116,12 +116,12 @@ func TestUntil(t *testing.T) {
 	t.Run(
 		`Returns everything before "omg"`, func(t *testing.T) {
 			in := NewInput("abcdefghijklmnomg")
-			res := UntilString("omg")(&in)
+			res, ok := UntilString("omg")(&in)
 
-			if res.Failed {
+			if !ok {
 				t.Error("Expected success")
 			}
-			if res.Value != "abcdefghijklmn" {
+			if res != "abcdefghijklmn" {
 				t.Error(`Expected "abcdefghijklmn"`)
 			}
 			if !in.End() {
@@ -133,9 +133,9 @@ func TestUntil(t *testing.T) {
 	t.Run(
 		`Doesn't go out of bounds if not found`, func(t *testing.T) {
 			in := NewInput("abcdefghijklmn")
-			res := UntilString("omg")(&in)
+			_, ok := UntilString("omg")(&in)
 
-			if !res.Failed {
+			if ok {
 				t.Error(`Expected failure as string isn't in input'`)
 			}
 			if in.Position != 0 {
@@ -146,12 +146,12 @@ func TestUntil(t *testing.T) {
 }
 
 func TestMany(t *testing.T) {
-	res := Parse(Many(Char('c')), "ccc")
+	res, ok := Parse(Many(Char('c')), "ccc")
 
-	if res.Failed {
+	if !ok {
 		t.Error("Expected success")
 	}
-	if len(res.Value) != 3 {
+	if len(res) != 3 {
 		t.Error(`Expected 3 results`)
 	}
 }

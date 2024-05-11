@@ -10,12 +10,10 @@ var Int = Regex(regexp.MustCompile(`^[-+]?\d+`))
 
 var AnyWord = Regex(regexp.MustCompile(`\w+`))
 
-//var AnyWord2
-
 var Uint = uintParser()
 
 func uintParser() Parser[string] {
-	return func(in *Input) Result[string] {
+	return func(in *Input) (string, bool) {
 		var parts []rune
 
 		for !in.End() {
@@ -31,9 +29,11 @@ func uintParser() Parser[string] {
 		}
 
 		if len(parts) > 0 {
-			return Result[string]{Value: string(parts)}
+			return string(parts), true
+			//return Result[string]{Value: string(parts)}
 		}
 
-		return Result[string]{Failed: true}
+		return "", false
+		//return Result[string]{Failed: true}
 	}
 }

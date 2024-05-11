@@ -29,8 +29,8 @@ type SepResult = And3Result[string, rune, string]
 
 var pDate = Map(
 	And3(Uint, Ws, Int), func(result And3Result[string, string, string]) DateResult {
-		micro, _ := strconv.Atoi(result.A)
-		adjustment, _ := strconv.Atoi(result.C)
+		micro, _ := strconv.Atoi(result.R1)
+		adjustment, _ := strconv.Atoi(result.R3)
 
 		return DateResult{Ms: micro * 1000, Adjustment: adjustment}
 	},
@@ -42,20 +42,20 @@ var PMessage = UntilString(End)
 
 var PCommitRow = Map(
 	And14(
-		/* A */ pGroup, // author
-		/* B */ pSep,
-		/* C */ Or(pGroup, Ws), // email
-		/* D */ pSep,
-		/* E */ pDate,
-		/* F */ pSep,
-		/* G */ pGroup, // commit id
-		/* H */ pSep,
-		/* I */ PParents,
-		/* J */ pSep,
-		/* K */ PMessage,
-		/* L */ pSep,
-		/* M */ POptionalRefs,
-		/* N */ Ws,
+		/* A R1 */ pGroup, // author
+		/* B R2 */ pSep,
+		/* C R3 */ Or(pGroup, Ws), // email
+		/* D R4 */ pSep,
+		/* E R5 */ pDate,
+		/* F R6 */ pSep,
+		/* G R7 */ pGroup, // commit id
+		/* H R8 */ pSep,
+		/* I R9 */ PParents,
+		/* J R10 */ pSep,
+		/* K R11 */ PMessage,
+		/* L R12 */ pSep,
+		/* M R13 */ POptionalRefs,
+		/* N R14 */ Ws,
 	),
 	func(
 		result And14Result[
@@ -76,18 +76,18 @@ var PCommitRow = Map(
 		],
 	) Commit {
 		c := Commit{
-			Author:    result.A,
-			Email:     result.C,
-			Date:      result.E,
-			Id:        result.G,
+			Author:    result.R1,
+			Email:     result.R3,
+			Date:      result.R5,
+			Id:        result.R7,
 			Index:     0,
-			ParentIds: result.I,
-			IsMerge:   len(result.I) == 2,
-			Message:   result.K,
+			ParentIds: result.R9,
+			IsMerge:   len(result.R9) == 2,
+			Message:   result.R11,
 		}
 
-		if len(result.M) > 0 {
-			for _, info := range result.M {
+		if len(result.R13) > 0 {
+			for _, info := range result.R13 {
 				ref := MakeRefInfo(info)
 				ref.CommitId = c.Id
 				ref.Time = c.Date.Ms
@@ -123,7 +123,7 @@ func LoadCommits(options RunOpts, num uint) []Commit {
 	}
 
 	defer core.Elapsed("Parse commits")()
-	res := Parse(PCommits, textResult.Stdout)
+	res, _ := Parse(PCommits, textResult.Stdout)
 
-	return res.Value
+	return res
 }

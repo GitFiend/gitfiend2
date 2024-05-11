@@ -1,13 +1,13 @@
 package parser
 
 func Or[T any](parsers ...Parser[T]) Parser[T] {
-	return func(in *Input) Result[T] {
+	return func(in *Input) (T, bool) {
 		for _, p := range parsers {
-			res := p(in)
-			if !res.Failed {
-				return res
+			res, ok := p(in)
+			if ok {
+				return res, true
 			}
 		}
-		return Result[T]{Failed: true}
+		return *new(T), false
 	}
 }
