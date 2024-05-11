@@ -4,6 +4,44 @@ type And1Result[A any] struct {
 	A A
 }
 
+func And1_[A any](a Parser[A]) Parser[And1Result[A]] {
+	return func(in *Input) (And1Result[A], bool) {
+		start := in.Position
+		resA, ok := a(in)
+
+		if ok {
+			value := And1Result[A]{
+				A: resA,
+			}
+			return value, true
+		}
+
+		in.SetPosition(start)
+		return And1Result[A]{}, false
+	}
+}
+
+func And2_[A any, B any](a Parser[A], b Parser[B]) Parser[And2Result[A, B]] {
+	return func(in *Input) (And2Result[A, B], bool) {
+		start := in.Position
+
+		resA, ok := a(in)
+		if ok {
+			resB, okB := b(in)
+			if okB {
+				value := And2Result[A, B]{
+					A: resA,
+					B: resB,
+				}
+				return value, true
+			}
+		}
+
+		in.SetPosition(start)
+		return And2Result[A, B]{}, false
+	}
+}
+
 func And1[A any](a Parser[A]) Parser[And1Result[A]] {
 	return func(in *Input) Result[And1Result[A]] {
 		start := in.Position

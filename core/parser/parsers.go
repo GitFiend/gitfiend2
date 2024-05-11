@@ -6,22 +6,24 @@ import (
 )
 
 func Char(c rune) Parser[rune] {
-	return func(in *Input) Result[rune] {
+	return func(in *Input) (rune, bool) {
 		if !in.End() {
 			n := in.NextChar()
 
 			if n == c {
 				in.Advance()
-				return Result[rune]{Value: n}
+				return n, true
+				//return Result[rune]{Value: n}
 			}
 		}
 
-		return Result[rune]{Failed: true}
+		return *new(rune), false
+		//return Result[rune]{Failed: true}
 	}
 }
 
 func Word(word string) Parser[string] {
-	return func(in *Input) Result[string] {
+	return func(in *Input) (string, bool) {
 		p := in.Position
 
 		for _, c := range word {
@@ -29,18 +31,20 @@ func Word(word string) Parser[string] {
 				in.Advance()
 			} else {
 				in.SetPosition(p)
-				return Result[string]{Failed: true}
+				return "", false
+				//return Result[string]{Failed: true}
 			}
 		}
 
-		return Result[string]{Value: word}
+		return word, true
+		//return Result[string]{Value: word}
 	}
 }
 
 // Regex
 // var re *regexp.Regexp = regexp.MustCompile(`^[a-z]+\[[0-9]+\]$`)
 func Regex(re *regexp.Regexp) Parser[string] {
-	return func(i *Input) Result[string] {
+	return func(i *Input) (string, bool) {
 		code := i.Code[i.Position:]
 		match := re.FindStringIndex(string(code))
 
@@ -48,20 +52,22 @@ func Regex(re *regexp.Regexp) Parser[string] {
 			start := i.Position
 			i.AdvanceBy(match[1])
 
-			return Result[string]{Value: string(i.Code[start : start+match[1]])}
+			//return Result[string]{Value: string(i.Code[start : start+match[1]])}
+			return string(i.Code[start : start+match[1]]), true
 		}
 
-		return Result[string]{Failed: true}
+		return "", false
+		//return Result[string]{Failed: true}
 	}
 }
 
 func OptionalWhiteSpace[T any]() Parser[T] {
-	return func(in *Input) Result[T] {
+	return func(in *Input) (T, bool) {
 		for !in.End() && IsWhiteSpace(in.NextChar()) {
 			in.Advance()
 		}
 
-		return Result[T]{Value: *new(T)}
+		return *new(T), true
 	}
 }
 
@@ -78,14 +84,14 @@ func RepSep[T any](parser Parser[T], separator string) Parser[[]T] {
 	return RepParserSep(parser, sepParser)
 }
 
-// RepParserSep Doesn't require a result.
+// RepParserSep Doesn't require a result, always succeeds.
 func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]T] {
-	return func(in *Input) Result[[]T] {
+	return func(in *Input) ([]T, bool) {
 		var results []T
 
 		for !in.End() {
-			result := parser(in)
-			if result.Failed {
+			result, ok := parser(in)
+			if !ok {
 				//if len(results) == 0 {
 				//	//return Result[[]T]{Failed: true}
 				//	return Result[[]T]{}
@@ -93,19 +99,20 @@ func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]
 
 				break
 			}
-			results = append(results, result.Value)
+			results = append(results, result)
 
 			if in.End() {
-				return Result[[]T]{Value: results}
+				break
+				//return Result[[]T]{Value: results}
 			}
 
-			sepRes := separator(in)
-			if sepRes.Failed {
+			_, ok = separator(in)
+			if !ok {
 				break
 			}
 		}
 
-		return Result[[]T]{Value: results}
+		return results, true
 	}
 }
 
@@ -137,7 +144,7 @@ func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]
 // UntilString
 // Input is consumed including str, but str is not included in the result.
 func UntilString(str string) Parser[string] {
-	return func(in *Input) Result[string] {
+	return func(in *Input) (string, bool) {
 		runes := []rune(str)
 		strLen := len(runes)
 		startPos := in.Position
@@ -148,55 +155,59 @@ func UntilString(str string) Parser[string] {
 
 			if slices.Equal(in.Code[p:p+strLen], runes) {
 				in.SetPosition(p + strLen)
-				return Result[string]{Value: string(in.Code[startPos:p])}
+				return string(in.Code[startPos:p]), true
 			}
 
 			in.Advance()
 		}
 
 		in.SetPosition(startPos)
-		return Result[string]{Failed: true}
+		return "", false
+		//return Result[string]{Failed: true}
 	}
 }
 
 func Many[T any](parser Parser[T]) Parser[[]T] {
-	return func(in *Input) Result[[]T] {
+	return func(in *Input) ([]T, bool) {
 		var results []T
 
 		for !in.End() {
-			result := parser(in)
+			result, ok := parser(in)
 
-			if result.Failed {
+			if !ok {
 				break
 			} else {
-				results = append(results, result.Value)
+				results = append(results, result)
 			}
 		}
 
-		return Result[[]T]{
-			Value: results,
-		}
+		return results, true
+
+		//return Result[[]T]{
+		//	Value: results,
+		//}
 	}
 }
 
 func Many1[T any](parser Parser[T]) Parser[[]T] {
-	return func(in *Input) Result[[]T] {
+	return func(in *Input) ([]T, bool) {
 		var results []T
 
 		for !in.End() {
-			result := parser(in)
+			result, ok := parser(in)
 
-			if result.Failed {
+			if !ok {
 				break
 			} else {
-				results = append(results, result.Value)
+				results = append(results, result)
 			}
 		}
 
-		return Result[[]T]{
-			Failed: len(results) == 0,
-			Value:  results,
-		}
+		return results, len(results) > 0
+		//return Result[[]T]{
+		//	Failed: len(results) == 0,
+		//	Value:  results,
+		//}
 	}
 }
 
