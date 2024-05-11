@@ -2,10 +2,14 @@ package main
 
 import (
 	"embed"
-
+	"fmt"
+	"gitfiend2/core/git"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"os"
+	"path"
+	"time"
 )
 
 //go:embed all:frontend/dist
@@ -15,6 +19,26 @@ var assets embed.FS
 //go:generate gofmt -w core/parser
 
 func main() {
+	runCommitsTest()
+	//runWails()
+}
+
+func runCommitsTest() {
+	start := time.Now()
+	home, err := os.UserHomeDir()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	res := git.LoadCommits(git.RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 1000)
+	duration := time.Since(start)
+	fmt.Println("********** vscode: ", duration.Milliseconds(), "ms")
+	fmt.Printf("Loaded %d commits", len(res))
+}
+
+func runWails() {
 	// Create an instance of the app structure
 	app := NewApp()
 

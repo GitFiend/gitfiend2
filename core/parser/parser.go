@@ -1,8 +1,6 @@
 package parser
 
-import (
-	"fmt"
-)
+import "fmt"
 
 //type Result[T any] struct {
 //	Failed bool

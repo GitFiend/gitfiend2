@@ -1,6 +1,7 @@
 package git
 
 import (
+	"fmt"
 	"gitfiend2/core"
 	. "gitfiend2/core/parser"
 	"os"
@@ -104,7 +105,7 @@ var PCommits = Many(PCommitRow)
 // LoadCommits
 // Intentional copy of options, so we can modify it.
 func LoadCommits(options RunOpts, num uint) []Commit {
-	print(os.Environ())
+	fmt.Println(os.Environ())
 
 	options.Args = []string{
 		"log",

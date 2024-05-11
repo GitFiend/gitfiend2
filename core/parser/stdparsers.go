@@ -30,10 +30,8 @@ func uintParser() Parser[string] {
 
 		if len(parts) > 0 {
 			return string(parts), true
-			//return Result[string]{Value: string(parts)}
 		}
 
 		return "", false
-		//return Result[string]{Failed: true}
 	}
 }
