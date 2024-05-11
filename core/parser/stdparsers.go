@@ -10,6 +10,8 @@ var Int = Regex(regexp.MustCompile(`^[-+]?\d+`))
 
 var AnyWord = Regex(regexp.MustCompile(`\w+`))
 
+//var AnyWord2
+
 var Uint = uintParser()
 
 func uintParser() Parser[string] {

@@ -1,9 +1,18 @@
 package parser
 
 type Input struct {
-	Code              string
+	Code              []rune
+	Len               int
 	Position          int
 	AttemptedPosition int
+}
+
+func NewInput(text string) Input {
+	code := []rune(text)
+	return Input{
+		Code: code,
+		Len:  len(code),
+	}
 }
 
 func (in *Input) Advance() {
@@ -13,12 +22,6 @@ func (in *Input) Advance() {
 func (in *Input) End() bool {
 	return in.Position >= len(in.Code)
 }
-
-//func (in *Input) EndOfInput() bool {
-//	length := len(in.Code)
-//
-//	return in.Position == length && in.AttemptedPosition == length
-//}
 
 func (in *Input) AdvanceBy(pos int) {
 	in.SetPosition(in.Position + pos)
@@ -32,17 +35,17 @@ func (in *Input) SetPosition(pos int) {
 }
 
 func (in *Input) NextChar() rune {
-	return rune(in.Code[in.Position])
+	return in.Code[in.Position]
 }
 
 func (in *Input) Rest(chunkLength int) string {
-	return in.Code[in.Position:min(len(in.Code), in.Position+chunkLength)]
+	return string(in.Code[in.Position:min(len(in.Code), in.Position+chunkLength)])
 }
 
 func (in *Input) SuccessfullyParsed() string {
-	return in.Code[0:in.AttemptedPosition]
+	return string(in.Code[0:in.AttemptedPosition])
 }
 
 func (in *Input) UnParsed() string {
-	return in.Code[in.AttemptedPosition:]
+	return string(in.Code[in.AttemptedPosition:])
 }

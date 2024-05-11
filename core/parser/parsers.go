@@ -2,6 +2,7 @@ package parser
 
 import (
 	"regexp"
+	"slices"
 )
 
 func Char(c rune) Parser[rune] {
@@ -41,13 +42,13 @@ func Word(word string) Parser[string] {
 func Regex(re *regexp.Regexp) Parser[string] {
 	return func(i *Input) Result[string] {
 		code := i.Code[i.Position:]
-		match := re.FindStringIndex(code)
+		match := re.FindStringIndex(string(code))
 
 		if match[0] == 0 {
 			start := i.Position
 			i.AdvanceBy(match[1])
 
-			return Result[string]{Value: i.Code[start : start+match[1]]}
+			return Result[string]{Value: string(i.Code[start : start+match[1]])}
 		}
 
 		return Result[string]{Failed: true}
@@ -108,21 +109,46 @@ func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]
 	}
 }
 
-// Until
-// Input is consumed including str, but str is not included in the result.
-func Until(str string) Parser[string] {
-	return func(in *Input) Result[string] {
-		strLen := len(str)
-		startPos := in.Position
+//// Until
+//// Input is consumed including str, but str is not included in the result.
+//func Until(str string) Parser[string] {
+//	return func(in *Input) Result[string] {
+//		strLen := len(str)
+//		startPos := in.Position
+//
+//		end := len(in.Code) - strLen
+//
+//		for in.Position <= end {
+//			p := in.Position
+//
+//			if in.Code[p:p+strLen] == str {
+//				in.SetPosition(p + strLen)
+//				return Result[string]{Value: in.Code[startPos:p]}
+//			}
+//
+//			in.Advance()
+//		}
+//
+//		in.SetPosition(startPos)
+//		return Result[string]{Failed: true}
+//	}
+//}
 
-		end := len(in.Code) - strLen
+// UntilString
+// Input is consumed including str, but str is not included in the result.
+func UntilString(str string) Parser[string] {
+	return func(in *Input) Result[string] {
+		runes := []rune(str)
+		strLen := len(runes)
+		startPos := in.Position
+		end := in.Len - strLen
 
 		for in.Position <= end {
 			p := in.Position
 
-			if in.Code[p:p+strLen] == str {
+			if slices.Equal(in.Code[p:p+strLen], runes) {
 				in.SetPosition(p + strLen)
-				return Result[string]{Value: in.Code[startPos:p]}
+				return Result[string]{Value: string(in.Code[startPos:p])}
 			}
 
 			in.Advance()
@@ -175,6 +201,8 @@ func Many1[T any](parser Parser[T]) Parser[[]T] {
 }
 
 //func TakeCharWhile(f func(r rune) bool) Parser[string] {
+//	s := "asdf"
+//
 //	return func(in *Input) Result[string] {
 //		for !in.End() {
 //			if f(in.NextChar()) {

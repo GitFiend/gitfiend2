@@ -10,6 +10,7 @@ type Result[T any] struct {
 }
 
 type Parser[T any] func(i *Input) Result[T]
+type Parser2[T any] func(i *Input) (T, bool)
 
 func Parse[T any](parser Parser[T], text string) Result[T] {
 	return parseInner(parser, text, true)
@@ -22,7 +23,7 @@ func ParsePart[T any](parser Parser[T], text string) Result[T] {
 // parseInner
 // TODO: We shouldn't be printing for every failure? Some of our tests expect failure and it's annoying.
 func parseInner[T any](parser Parser[T], text string, mustParseAll bool) Result[T] {
-	in := Input{Code: text}
+	in := NewInput(text)
 	result := parser(&in)
 
 	if mustParseAll && !in.End() {

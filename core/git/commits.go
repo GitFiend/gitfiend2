@@ -38,7 +38,7 @@ var pDate = Map(
 
 var PParents = RepParserSep(AnyWord, Ws)
 
-var PMessage = Until(End)
+var PMessage = UntilString(End)
 
 var PCommitRow = Map(
 	And14(

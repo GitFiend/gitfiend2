@@ -115,8 +115,8 @@ func TestRepParserSep(t *testing.T) {
 func TestUntil(t *testing.T) {
 	t.Run(
 		`Returns everything before "omg"`, func(t *testing.T) {
-			in := Input{Code: "abcdefghijklmnomg"}
-			res := Until("omg")(&in)
+			in := NewInput("abcdefghijklmnomg")
+			res := UntilString("omg")(&in)
 
 			if res.Failed {
 				t.Error("Expected success")
@@ -132,8 +132,8 @@ func TestUntil(t *testing.T) {
 
 	t.Run(
 		`Doesn't go out of bounds if not found`, func(t *testing.T) {
-			in := Input{Code: "abcdefghijklmn"}
-			res := Until("omg")(&in)
+			in := NewInput("abcdefghijklmn")
+			res := UntilString("omg")(&in)
 
 			if !res.Failed {
 				t.Error(`Expected failure as string isn't in input'`)
