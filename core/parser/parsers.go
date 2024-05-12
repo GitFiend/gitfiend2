@@ -13,12 +13,10 @@ func Char(c rune) Parser[rune] {
 			if n == c {
 				in.Advance()
 				return n, true
-				//return Result[rune]{Value: n}
 			}
 		}
 
 		return *new(rune), false
-		//return Result[rune]{Failed: true}
 	}
 }
 
@@ -32,12 +30,10 @@ func Word(word string) Parser[string] {
 			} else {
 				in.SetPosition(p)
 				return "", false
-				//return Result[string]{Failed: true}
 			}
 		}
 
 		return word, true
-		//return Result[string]{Value: word}
 	}
 }
 
@@ -52,12 +48,10 @@ func Regex(re *regexp.Regexp) Parser[string] {
 			start := i.Position
 			i.AdvanceBy(match[1])
 
-			//return Result[string]{Value: string(i.Code[start : start+match[1]])}
 			return string(i.Code[start : start+match[1]]), true
 		}
 
 		return "", false
-		//return Result[string]{Failed: true}
 	}
 }
 
@@ -92,18 +86,12 @@ func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]
 		for !in.End() {
 			result, ok := parser(in)
 			if !ok {
-				//if len(results) == 0 {
-				//	//return Result[[]T]{Failed: true}
-				//	return Result[[]T]{}
-				//}
-
 				break
 			}
 			results = append(results, result)
 
 			if in.End() {
 				break
-				//return Result[[]T]{Value: results}
 			}
 
 			_, ok = separator(in)
@@ -163,7 +151,6 @@ func UntilString(str string) Parser[string] {
 
 		in.SetPosition(startPos)
 		return "", false
-		//return Result[string]{Failed: true}
 	}
 }
 
@@ -182,10 +169,6 @@ func Many[T any](parser Parser[T]) Parser[[]T] {
 		}
 
 		return results, true
-
-		//return Result[[]T]{
-		//	Value: results,
-		//}
 	}
 }
 
@@ -204,23 +187,20 @@ func Many1[T any](parser Parser[T]) Parser[[]T] {
 		}
 
 		return results, len(results) > 0
-		//return Result[[]T]{
-		//	Failed: len(results) == 0,
-		//	Value:  results,
-		//}
 	}
 }
 
-//func TakeCharWhile(f func(r rune) bool) Parser[string] {
-//	s := "asdf"
-//
-//	return func(in *Input) Result[string] {
-//		for !in.End() {
-//			if f(in.NextChar()) {
-//				in.Advance()
-//			} else {
-//				break
-//			}
-//		}
-//	}
-//}
+func TakeCharWhile(f func(r rune) bool) Parser[string] {
+	return func(in *Input) (string, bool) {
+		startPos := in.Position
+
+		for !in.End() && f(in.NextChar()) {
+			in.Advance()
+		}
+
+		if startPos == in.Position {
+			return "", false
+		}
+		return string(in.Code[startPos:in.Position]), true
+	}
+}

@@ -35,7 +35,10 @@ func TestLoadCommits(t *testing.T) {
 }
 
 func TestPDate(t *testing.T) {
-	res, ok := parser.Parse(pDate, "1243 23")
+	//res, ok := parser.Parse(pDate, "1243 23")
+
+	p := parser.RunParse(pDate, "1243 23", true)
+	res, ok := p.Run()
 
 	if !ok {
 		t.Error("Expected success")

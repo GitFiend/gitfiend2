@@ -2,13 +2,6 @@ package parser
 
 import "fmt"
 
-//type Result[T any] struct {
-//	Failed bool
-//	Value  T
-//}
-
-// type Parser[T any] func(i *Input) Result[T]
-
 type Parser[T any] func(i *Input) (T, bool)
 
 func Parse[T any](parser Parser[T], text string) (T, bool) {
@@ -17,6 +10,52 @@ func Parse[T any](parser Parser[T], text string) (T, bool) {
 
 func ParsePart[T any](parser Parser[T], text string) (T, bool) {
 	return parseInner(parser, text, false)
+}
+
+type ParseOpts struct {
+}
+
+type ParseInstance[T any] struct {
+	text     string
+	input    *Input
+	parser   Parser[T]
+	parseAll bool
+}
+
+func RunParse[T any](parser Parser[T], text string, parseAll bool) *ParseInstance[T] {
+	in := NewInput(text)
+
+	return &ParseInstance[T]{
+		text:     text,
+		input:    &in,
+		parser:   parser,
+		parseAll: parseAll,
+	}
+}
+
+func (p *ParseInstance[T]) Run() (T, bool) {
+	in := p.input
+	result, ok := p.parser(in)
+
+	if p.parseAll && !in.End() {
+		message := fmt.Sprintf(
+			`
+PARSE FAILURE AT POSITION %d:
+  SUCCESSFULLY PARSED:
+  "%s"
+
+  FAILED AT:
+  "%s"
+`,
+			in.AttemptedPosition,
+			in.SuccessfullyParsed(),
+			in.UnParsed(),
+		)
+
+		fmt.Println(message)
+	}
+
+	return result, ok
 }
 
 // parseInner
@@ -55,6 +94,5 @@ func Map[T any, U any](parser Parser[T], f func(result T) U) Parser[U] {
 			return f(res), true
 		}
 		return *new(U), false
-		//return Result[U]{Failed: true}
 	}
 }

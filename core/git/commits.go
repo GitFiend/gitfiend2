@@ -9,7 +9,8 @@ import (
 	"strconv"
 )
 
-var End = core.PseudoUuid()
+const End = "4a41380f-a4e8-4251-9ca2-bf55186ed32a"
+const SepChar = ';'
 
 /**
  * %an author name
@@ -20,7 +21,7 @@ var End = core.PseudoUuid()
  * %B message
  * %d remotes
  */
-var prettyFormatted = `--pretty=format:%an, %ae, %ad, %H, %P, %B` + End + `, %d`
+const prettyFormatted = `--pretty=format:%an, %ae, %ad, %H, %P, %B` + End + `; %d`
 
 var pGroup = Regex(regexp.MustCompile(`[^,]+`))
 

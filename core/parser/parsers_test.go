@@ -1,7 +1,9 @@
 package parser
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
+	"unicode"
 )
 
 func TestChar(t *testing.T) {
@@ -143,6 +145,20 @@ func TestUntil(t *testing.T) {
 			}
 		},
 	)
+}
+
+func TestTakeCharWhile(t *testing.T) {
+	p := TakeCharWhile(func(r rune) bool {
+		return unicode.IsLetter(r)
+	})
+
+	res, ok := ParsePart(p, "abcd55")
+
+	assert.True(t, ok)
+	assert.Equal(t, "abcd", res)
+
+	_, ok = Parse(p, "abcd55")
+	assert.False(t, ok)
 }
 
 func TestMany(t *testing.T) {
