@@ -5,17 +5,15 @@ import (
 	"slices"
 )
 
-func Char(c rune) Parser[rune] {
+func Rune(c rune) Parser[rune] {
 	return func(in *Input) (rune, bool) {
 		if !in.End() {
-			n := in.NextChar()
-
+			n := in.NextRune()
 			if n == c {
 				in.Advance()
 				return n, true
 			}
 		}
-
 		return *new(rune), false
 	}
 }
@@ -25,7 +23,7 @@ func Word(word string) Parser[string] {
 		p := in.Position
 
 		for _, c := range word {
-			if !in.End() && in.NextChar() == c {
+			if !in.End() && in.NextRune() == c {
 				in.Advance()
 			} else {
 				in.SetPosition(p)
@@ -57,7 +55,7 @@ func Regex(re *regexp.Regexp) Parser[string] {
 
 func OptionalWhiteSpace[T any]() Parser[T] {
 	return func(in *Input) (T, bool) {
-		for !in.End() && IsWhiteSpace(in.NextChar()) {
+		for !in.End() && IsWhiteSpace(in.NextRune()) {
 			in.Advance()
 		}
 
@@ -215,11 +213,11 @@ func Many1[T any](parser Parser[T]) Parser[[]T] {
 	}
 }
 
-func TakeCharWhile(f func(r rune) bool) Parser[string] {
+func TakeRuneWhile(f func(r rune) bool) Parser[string] {
 	return func(in *Input) (string, bool) {
 		startPos := in.Position
 
-		for !in.End() && f(in.NextChar()) {
+		for !in.End() && f(in.NextRune()) {
 			in.Advance()
 		}
 

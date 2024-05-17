@@ -75,7 +75,7 @@ var PHeadRef = Map(
 var PCommitRef = Or(PHeadRef, PTagRef, PRefName)
 
 var PCommitRefs = Map(
-	And3(Char('('), RepSep(PCommitRef, ","), Char(')')),
+	And3(Rune('('), RepSep(PCommitRef, ","), Rune(')')),
 	func(result And3Result[rune, []RefInfoPart, rune]) []RefInfoPart {
 		return result.R2
 	},

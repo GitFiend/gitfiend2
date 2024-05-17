@@ -11,8 +11,8 @@ import (
 
 func TestPCommitRow(t *testing.T) {
 	text := fmt.Sprintf(
-		"Toby, sugto555@gmail.com, 1648863350 +1300, dd5733ad96082f0f33164bd1e2d72f7540bf7d9f,"+
-			" 2e8966986f620f491c34e6243a546d85dd2322e0, Write commit row parser. Added necessary new git types. %s,"+
+		"Toby; sugto555@gmail.com; 1648863350 +1300; dd5733ad96082f0f33164bd1e2d72f7540bf7d9f;"+
+			" 2e8966986f620f491c34e6243a546d85dd2322e0; Write commit row parser. Added necessary new git types. %s;"+
 			"  (HEAD -> refs/heads/master, refs/remotes/origin/master)",
 		End,
 	)
@@ -32,7 +32,7 @@ func TestLoadCommits(t *testing.T) {
 	defer core.Elapsed("LoadCommits")()
 
 	home, _ := os.UserHomeDir()
-	res := LoadCommits(RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 1000)
+	res := LoadCommits(RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 5000)
 
 	println(len(res))
 }

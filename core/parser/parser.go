@@ -10,6 +10,10 @@ func ParseAll[T any](parser Parser[T], text string) (T, bool) {
 	p := New(parser, text)
 	res, ok := p.Run()
 
+	if !p.Finished() {
+		fmt.Println(p.GetErrorInfo())
+	}
+
 	return res, ok && p.Finished()
 }
 

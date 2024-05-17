@@ -10,7 +10,7 @@ var Int = Regex(regexp.MustCompile(`^[-+]?\d+`))
 
 // var AnyWord = Regex(regexp.MustCompile(`\w+`))
 
-var AnyWord = TakeCharWhile(func(r rune) bool {
+var AnyWord = TakeRuneWhile(func(r rune) bool {
 	return unicode.IsDigit(r) || unicode.IsLetter(r)
 })
 
@@ -25,7 +25,7 @@ func uintParser() Parser[string] {
 		var parts []rune
 
 		for !in.End() {
-			n := in.NextChar()
+			n := in.NextRune()
 
 			if unicode.IsDigit(n) {
 				parts = append(parts, n)

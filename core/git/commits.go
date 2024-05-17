@@ -5,12 +5,11 @@ import (
 	"gitfiend2/core"
 	. "gitfiend2/core/parser"
 	"os"
-	"regexp"
 	"strconv"
 )
 
 const End = "4a41380f-a4e8-4251-9ca2-bf55186ed32a"
-const SepChar = ';'
+const SepRune = ';'
 
 /**
  * %an author name
@@ -21,13 +20,17 @@ const SepChar = ';'
  * %B message
  * %d remotes
  */
-const prettyFormatted = `--pretty=format:%an, %ae, %ad, %H, %P, %B` + End + `; %d`
+const prettyFormatted = `--pretty=format:%an; %ae; %ad; %H; %P; %B` + End + `; %d`
 
-var pGroup = Regex(regexp.MustCompile(`[^,]+`))
+var pGroup = TakeRuneWhile(func(r rune) bool {
+	return r != SepRune
+})
 
-var pSep = And3(Ws, Char(','), Ws)
+var pSep = Map(And3(Ws, Rune(SepRune), Ws), func(result And3Result[string, rune, string]) rune {
+	return SepRune
+})
 
-type SepResult = And3Result[string, rune, string]
+var pEmail = Or(pGroup, Ws)
 
 var pDate = Map(
 	And3(Uint, Ws, Int), func(result And3Result[string, string, string]) DateResult {
@@ -46,35 +49,35 @@ var PIdList = RepParserSep(AnyWord, UntilLineEnd)
 
 var PCommitRow = Map(
 	And14(
-		/* A R1 */ pGroup, // author
-		/* B R2 */ pSep,
-		/* C R3 */ Or(pGroup, Ws), // email
-		/* D R4 */ pSep,
-		/* E R5 */ pDate,
-		/* F R6 */ pSep,
-		/* G R7 */ pGroup, // commit id
-		/* H R8 */ pSep,
-		/* I R9 */ PParents,
-		/* J R10 */ pSep,
-		/* K R11 */ PMessage,
-		/* L R12 */ pSep,
-		/* M R13 */ POptionalRefs,
-		/* N R14 */ Ws,
+		/* R1 */ pGroup, // author
+		/* R2 */ pSep,
+		/* R3 */ pEmail, // email
+		/* R4 */ pSep,
+		/* R5 */ pDate,
+		/* R6 */ pSep,
+		/* R7 */ pGroup, // commit id
+		/* R8 */ pSep,
+		/* R9 */ PParents,
+		/* R10 */ pSep,
+		/* R11 */ PMessage,
+		/* R12 */ pSep,
+		/* R13 */ POptionalRefs,
+		/* R14 */ Ws,
 	),
 	func(
 		result And14Result[
 			string,
-			SepResult,
+			rune,
 			string,
-			SepResult,
+			rune,
 			DateResult,
-			SepResult,
+			rune,
 			string,
-			SepResult,
+			rune,
 			[]string,
-			SepResult,
+			rune,
 			string,
-			SepResult,
+			rune,
 			[]RefInfoPart,
 			string,
 		],

@@ -11,8 +11,8 @@ func TestOr(t *testing.T) {
 		}
 	})
 
-	t.Run("When given 2 Char parsers, expect seconde d result", func(t *testing.T) {
-		res, ok := ParseAll(Or(Char('c'), Char('d')), "d")
+	t.Run("When given 2 Rune parsers, expect seconde d result", func(t *testing.T) {
+		res, ok := ParseAll(Or(Rune('c'), Rune('d')), "d")
 
 		if !ok {
 			t.Error("Failed to parse d")

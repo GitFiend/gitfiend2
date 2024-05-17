@@ -7,7 +7,7 @@ import (
 )
 
 func TestChar(t *testing.T) {
-	cParser := Char('c')
+	cParser := Rune('c')
 
 	res, _ := ParseAll(cParser, "c")
 
@@ -34,7 +34,7 @@ func TestChar(t *testing.T) {
 
 func TestMapOnCharParser(t *testing.T) {
 	dParser := Map(
-		Char('d'), func(result rune) string {
+		Rune('d'), func(result rune) string {
 			return string(result)
 		},
 	)
@@ -83,7 +83,7 @@ func TestOptionalWhiteSpace(t *testing.T) {
 
 	t.Run(
 		"Parses single space and then another parser", func(t *testing.T) {
-			res, _ := ParseAll(And2(Ws, Char('c')), " c")
+			res, _ := ParseAll(And2(Ws, Rune('c')), " c")
 
 			if res.R1 != "" {
 				t.Error("Failed to get whitespace result")
@@ -107,7 +107,7 @@ func TestOptionalWhiteSpace(t *testing.T) {
 }
 
 func TestRepParserSep(t *testing.T) {
-	_, ok := ParseAll(RepParserSep(Char('a'), Char(',')), "a,a,a")
+	_, ok := ParseAll(RepParserSep(Rune('a'), Rune(',')), "a,a,a")
 
 	if !ok {
 		t.Error(`Failed to parse "a,a,a"`)
@@ -147,8 +147,8 @@ func TestUntil(t *testing.T) {
 	)
 }
 
-func TestTakeCharWhile(t *testing.T) {
-	p := TakeCharWhile(func(r rune) bool {
+func TestTakeRuneWhile(t *testing.T) {
+	p := TakeRuneWhile(func(r rune) bool {
 		return unicode.IsLetter(r)
 	})
 
@@ -162,7 +162,7 @@ func TestTakeCharWhile(t *testing.T) {
 }
 
 func TestMany(t *testing.T) {
-	res, ok := ParseAll(Many(Char('c')), "ccc")
+	res, ok := ParseAll(Many(Rune('c')), "ccc")
 
 	if !ok {
 		t.Error("Expected success")

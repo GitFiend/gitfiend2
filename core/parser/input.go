@@ -34,7 +34,7 @@ func (in *Input) SetPosition(pos int) {
 	in.Position = pos
 }
 
-func (in *Input) NextChar() rune {
+func (in *Input) NextRune() rune {
 	return in.Code[in.Position]
 }
 
