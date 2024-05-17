@@ -4,67 +4,50 @@ import "fmt"
 
 type Parser[T any] func(i *Input) (T, bool)
 
-func Parse[T any](parser Parser[T], text string) (T, bool) {
-	return parseInner(parser, text, true)
+// ParseAll
+// Useful for tests. No error info is kept.
+func ParseAll[T any](parser Parser[T], text string) (T, bool) {
+	p := New(parser, text)
+	res, ok := p.Run()
+
+	return res, ok && p.Finished()
 }
 
+// ParsePart
+// Useful for tests. No error info is kept.
 func ParsePart[T any](parser Parser[T], text string) (T, bool) {
-	return parseInner(parser, text, false)
-}
-
-type ParseOpts struct {
+	p := New(parser, text)
+	return p.Run()
 }
 
 type ParseInstance[T any] struct {
-	text     string
-	input    *Input
-	parser   Parser[T]
-	parseAll bool
+	text   string
+	input  *Input
+	parser Parser[T]
 }
 
-func RunParse[T any](parser Parser[T], text string, parseAll bool) *ParseInstance[T] {
+func New[T any](parser Parser[T], text string) *ParseInstance[T] {
 	in := NewInput(text)
 
 	return &ParseInstance[T]{
-		text:     text,
-		input:    &in,
-		parser:   parser,
-		parseAll: parseAll,
+		text:   text,
+		input:  &in,
+		parser: parser,
 	}
 }
 
 func (p *ParseInstance[T]) Run() (T, bool) {
-	in := p.input
-	result, ok := p.parser(in)
-
-	if p.parseAll && !in.End() {
-		message := fmt.Sprintf(
-			`
-PARSE FAILURE AT POSITION %d:
-  SUCCESSFULLY PARSED:
-  "%s"
-
-  FAILED AT:
-  "%s"
-`,
-			in.AttemptedPosition,
-			in.SuccessfullyParsed(),
-			in.UnParsed(),
-		)
-
-		fmt.Println(message)
-	}
-
-	return result, ok
+	return p.parser(p.input)
 }
 
-// parseInner
-// TODO: We shouldn't be printing for every failure? Some of our tests expect failure and it's annoying.
-func parseInner[T any](parser Parser[T], text string, mustParseAll bool) (T, bool) {
-	in := NewInput(text)
-	result, ok := parser(&in)
+func (p *ParseInstance[T]) Finished() bool {
+	return p.input.End()
+}
 
-	if mustParseAll && !in.End() {
+func (p *ParseInstance[T]) GetErrorInfo() string {
+	in := p.input
+
+	if !in.End() {
 		message := fmt.Sprintf(
 			`
 PARSE FAILURE AT POSITION %d:
@@ -79,10 +62,9 @@ PARSE FAILURE AT POSITION %d:
 			in.UnParsed(),
 		)
 
-		fmt.Println(message)
+		return message
 	}
-
-	return result, ok
+	return ""
 }
 
 // Map See tests for how to use this.

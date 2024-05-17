@@ -4,18 +4,22 @@ import (
 	"fmt"
 	"gitfiend2/core"
 	"gitfiend2/core/parser"
+	"os"
+	"path"
 	"testing"
 )
 
 func TestPCommitRow(t *testing.T) {
 	text := fmt.Sprintf(
-		`Toby, sugto555@gmail.com, 1648863350 +1300, dd5733ad96082f0f33164bd1e2d72f7540bf7d9f, 2e8966986f620f491c34e6243a546d85dd2322e0, Write commit row parser. Added necessary new git types. %s,  (HEAD -> refs/heads/master, refs/remotes/origin/master)`,
+		"Toby, sugto555@gmail.com, 1648863350 +1300, dd5733ad96082f0f33164bd1e2d72f7540bf7d9f,"+
+			" 2e8966986f620f491c34e6243a546d85dd2322e0, Write commit row parser. Added necessary new git types. %s,"+
+			"  (HEAD -> refs/heads/master, refs/remotes/origin/master)",
 		End,
 	)
 
 	t.Run(
 		text, func(t *testing.T) {
-			_, ok := parser.Parse(PCommitRow, text)
+			_, ok := parser.ParseAll(PCommitRow, text)
 
 			if !ok {
 				t.Error("Expected success")
@@ -25,19 +29,16 @@ func TestPCommitRow(t *testing.T) {
 }
 
 func TestLoadCommits(t *testing.T) {
-	//dir, _ := os.Getwd()
-
 	defer core.Elapsed("LoadCommits")()
 
-	res := LoadCommits(RunOpts{RepoPath: `/home/toby/Repos/vscode`}, 5000)
+	home, _ := os.UserHomeDir()
+	res := LoadCommits(RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 1000)
 
 	println(len(res))
 }
 
 func TestPDate(t *testing.T) {
-	//res, ok := parser.Parse(pDate, "1243 23")
-
-	p := parser.RunParse(pDate, "1243 23", true)
+	p := parser.New(pDate, "1243 23")
 	res, ok := p.Run()
 
 	if !ok {
@@ -58,7 +59,7 @@ func TestPParents(t *testing.T) {
 			h2 := "505586ea2ec4431a462d9e37cff7750923b199f0"
 			var text = h1 + " " + h2
 
-			res, ok := parser.Parse(PParents, text)
+			res, ok := parser.ParseAll(PParents, text)
 
 			if !ok {
 				t.Error(`Failed to parse ` + text)
@@ -75,7 +76,7 @@ func TestPParents(t *testing.T) {
 	t.Run(
 		"no parents", func(t *testing.T) {
 
-			_, ok := parser.Parse(PParents, "")
+			_, ok := parser.ParseAll(PParents, "")
 
 			if !ok {
 				t.Error(`Expected success when there's no parent hashes to parse.'`)
@@ -86,8 +87,8 @@ func TestPParents(t *testing.T) {
 
 func TestPMessage(t *testing.T) {
 	t.Run(
-		`Parse exmaple message 1`, func(t *testing.T) {
-			res, ok := parser.Parse(PMessage, `fasdf *\nasdf `+End+` asdf`)
+		`ParseAll exmaple message 1`, func(t *testing.T) {
+			res, ok := parser.ParseAll(PMessage, `fasdf *\nasdf `+End+` asdf`)
 
 			if !ok {
 				t.Error(`Expected success`)
@@ -99,10 +100,10 @@ func TestPMessage(t *testing.T) {
 	)
 
 	t.Run(
-		`Parse realistic message`, func(t *testing.T) {
+		`ParseAll realistic message`, func(t *testing.T) {
 			text := fmt.Sprintf(`Write commit row parser. Added necessary new git types. %s`, End)
 
-			_, ok := parser.Parse(PMessage, text)
+			_, ok := parser.ParseAll(PMessage, text)
 
 			if !ok {
 				t.Error()

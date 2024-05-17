@@ -9,13 +9,13 @@ import (
 func TestChar(t *testing.T) {
 	cParser := Char('c')
 
-	res, _ := Parse(cParser, "c")
+	res, _ := ParseAll(cParser, "c")
 
 	if res != 'c' {
 		t.Errorf("Expected c, got %c", res)
 	}
 
-	res2, _ := Parse(cParser, "d")
+	res2, _ := ParseAll(cParser, "d")
 
 	if res2 != rune(0) {
 		t.Error("Expected empty result, got ", res2)
@@ -23,7 +23,7 @@ func TestChar(t *testing.T) {
 
 	t.Run(
 		`Fails when there's no input (rather than panic)'`, func(t *testing.T) {
-			_, ok := Parse(cParser, "")
+			_, ok := ParseAll(cParser, "")
 
 			if ok {
 				t.Error(`Expected parse failure with no input`)
@@ -39,7 +39,7 @@ func TestMapOnCharParser(t *testing.T) {
 		},
 	)
 
-	res, _ := Parse(dParser, "d")
+	res, _ := ParseAll(dParser, "d")
 
 	if res != "d" {
 		t.Error("Expected \"d\" , got ", res)
@@ -48,10 +48,10 @@ func TestMapOnCharParser(t *testing.T) {
 
 func TestWord(t *testing.T) {
 	t.Run(
-		`Parse omg`, func(t *testing.T) {
+		`ParseAll omg`, func(t *testing.T) {
 			wParser := Word("omg")
 
-			res, _ := Parse(wParser, "omg")
+			res, _ := ParseAll(wParser, "omg")
 
 			if res != "omg" {
 				t.Error("Expected \"omg\", got \"", res, "\"")
@@ -61,7 +61,7 @@ func TestWord(t *testing.T) {
 
 	t.Run(
 		"Word parsing doesn't go out of bounds", func(t *testing.T) {
-			_, ok := Parse(Word("omgg"), "omg")
+			_, ok := ParseAll(Word("omgg"), "omg")
 
 			if ok {
 				t.Error("Expected this to fail (also not panic).")
@@ -73,7 +73,7 @@ func TestWord(t *testing.T) {
 func TestOptionalWhiteSpace(t *testing.T) {
 	t.Run(
 		"Parses single space", func(t *testing.T) {
-			_, ok := Parse(Ws, " ")
+			_, ok := ParseAll(Ws, " ")
 
 			if !ok {
 				t.Error("Whitespace parser should always succeed")
@@ -83,7 +83,7 @@ func TestOptionalWhiteSpace(t *testing.T) {
 
 	t.Run(
 		"Parses single space and then another parser", func(t *testing.T) {
-			res, _ := Parse(And2(Ws, Char('c')), " c")
+			res, _ := ParseAll(And2(Ws, Char('c')), " c")
 
 			if res.R1 != "" {
 				t.Error("Failed to get whitespace result")
@@ -97,7 +97,7 @@ func TestOptionalWhiteSpace(t *testing.T) {
 
 	t.Run(
 		"Gets to the end of input and doesn't panic", func(t *testing.T) {
-			_, ok := Parse(Ws, "   ")
+			_, ok := ParseAll(Ws, "   ")
 
 			if !ok {
 				t.Error(`White space parser failed on "   "`)
@@ -107,7 +107,7 @@ func TestOptionalWhiteSpace(t *testing.T) {
 }
 
 func TestRepParserSep(t *testing.T) {
-	_, ok := Parse(RepParserSep(Char('a'), Char(',')), "a,a,a")
+	_, ok := ParseAll(RepParserSep(Char('a'), Char(',')), "a,a,a")
 
 	if !ok {
 		t.Error(`Failed to parse "a,a,a"`)
@@ -157,12 +157,12 @@ func TestTakeCharWhile(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "abcd", res)
 
-	_, ok = Parse(p, "abcd55")
+	_, ok = ParseAll(p, "abcd55")
 	assert.False(t, ok)
 }
 
 func TestMany(t *testing.T) {
-	res, ok := Parse(Many(Char('c')), "ccc")
+	res, ok := ParseAll(Many(Char('c')), "ccc")
 
 	if !ok {
 		t.Error("Expected success")

@@ -8,9 +8,17 @@ import (
 var Number = Regex(regexp.MustCompile(`-?(\d+(\.\d+)?)`))
 var Int = Regex(regexp.MustCompile(`^[-+]?\d+`))
 
-var AnyWord = Regex(regexp.MustCompile(`\w+`))
+// var AnyWord = Regex(regexp.MustCompile(`\w+`))
+
+var AnyWord = TakeCharWhile(func(r rune) bool {
+	return unicode.IsDigit(r) || unicode.IsLetter(r)
+})
 
 var Uint = uintParser()
+
+var LineEnd = Or(Word("\n"), Word("\r\n"))
+
+var UntilLineEnd = UntilParser(LineEnd)
 
 func uintParser() Parser[string] {
 	return func(in *Input) (string, bool) {

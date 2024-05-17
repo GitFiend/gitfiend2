@@ -154,6 +154,31 @@ func UntilString(str string) Parser[string] {
 	}
 }
 
+// UntilParser
+// Parses until parser is found or the end of input. Always succeeds.
+// All text is consumed, but end parser result is not included (TODO: Check this)
+func UntilParser[T any](parser Parser[T]) Parser[string] {
+	return func(in *Input) (string, bool) {
+		startPos := in.Position
+		currentPos := startPos
+
+		for !in.End() {
+			currentPos = in.Position
+			_, ok := parser(in)
+
+			if ok {
+				break
+			}
+			in.Advance()
+		}
+
+		if startPos == currentPos {
+			return "", true
+		}
+		return string(in.Code[startPos:currentPos]), true
+	}
+}
+
 func Many[T any](parser Parser[T]) Parser[[]T] {
 	return func(in *Input) ([]T, bool) {
 		var results []T

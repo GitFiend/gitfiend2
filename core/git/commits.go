@@ -42,6 +42,8 @@ var PParents = RepParserSep(AnyWord, Ws)
 
 var PMessage = UntilString(End)
 
+var PIdList = RepParserSep(AnyWord, UntilLineEnd)
+
 var PCommitRow = Map(
 	And14(
 		/* A R1 */ pGroup, // author
@@ -124,8 +126,8 @@ func LoadCommits(options RunOpts, num uint) []Commit {
 		return nil
 	}
 
-	defer core.Elapsed("Parse commits")()
-	res, _ := Parse(PCommits, textResult.Stdout)
+	defer core.Elapsed("ParseAll commits")()
+	res, _ := ParseAll(PCommits, textResult.Stdout)
 
 	return res
 }

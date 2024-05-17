@@ -40,7 +40,7 @@ func TestGetRemoteName(t *testing.T) {
 }
 
 func TestPRefName(t *testing.T) {
-	_, ok := parser.Parse(PRefName, "refs/heads/git-lib")
+	_, ok := parser.ParseAll(PRefName, "refs/heads/git-lib")
 
 	if !ok {
 		t.Error(`Expected parser success`)
@@ -48,7 +48,7 @@ func TestPRefName(t *testing.T) {
 }
 
 func TestPTagRef(t *testing.T) {
-	_, ok := parser.Parse(PTagRef, `tag: refs/tags/v0.11.2`)
+	_, ok := parser.ParseAll(PTagRef, `tag: refs/tags/v0.11.2`)
 
 	if !ok {
 		t.Error(`Expected parser success`)
@@ -56,7 +56,7 @@ func TestPTagRef(t *testing.T) {
 }
 
 func TestPHeadRef(t *testing.T) {
-	res, ok := parser.Parse(PHeadRef, `HEAD -> refs/heads/master`)
+	res, ok := parser.ParseAll(PHeadRef, `HEAD -> refs/heads/master`)
 
 	if !ok {
 		t.Error(`Expected parse success`)
@@ -69,7 +69,7 @@ func TestPHeadRef(t *testing.T) {
 func TestPCommitRefs(t *testing.T) {
 	a := `(HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD)`
 
-	res, ok := parser.Parse(PCommitRefs, a)
+	res, ok := parser.ParseAll(PCommitRefs, a)
 
 	if !ok {
 		t.Error(`Expected success`)
@@ -84,9 +84,9 @@ func TestPCommitRefs(t *testing.T) {
 
 func TestPOptionalRefs(t *testing.T) {
 	t.Run(
-		`Parse 2 refs`, func(t *testing.T) {
+		`ParseAll 2 refs`, func(t *testing.T) {
 			a := `(HEAD -> refs/heads/master, refs/remotes/origin/master)`
-			res, ok := parser.Parse(POptionalRefs, a)
+			res, ok := parser.ParseAll(POptionalRefs, a)
 
 			if !ok {
 				t.Error(`Expected success`)
@@ -101,9 +101,9 @@ func TestPOptionalRefs(t *testing.T) {
 	)
 
 	t.Run(
-		`Parse 3 refs`, func(t *testing.T) {
+		`ParseAll 3 refs`, func(t *testing.T) {
 			a := `(HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD)`
-			res, ok := parser.Parse(POptionalRefs, a)
+			res, ok := parser.ParseAll(POptionalRefs, a)
 
 			if !ok {
 				t.Error(`Expected success`)
