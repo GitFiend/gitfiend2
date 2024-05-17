@@ -35,8 +35,7 @@ func Word(word string) Parser[string] {
 	}
 }
 
-// Regex
-// var re *regexp.Regexp = regexp.MustCompile(`^[a-z]+\[[0-9]+\]$`)
+// Regex This is really slow, so only use it if that doesn't matter.
 func Regex(re *regexp.Regexp) Parser[string] {
 	return func(i *Input) (string, bool) {
 		code := i.Code[i.Position:]
@@ -101,31 +100,6 @@ func RepParserSep[T any, U any](parser Parser[T], separator Parser[U]) Parser[[]
 		return results, true
 	}
 }
-
-//// Until
-//// Input is consumed including str, but str is not included in the result.
-//func Until(str string) Parser[string] {
-//	return func(in *Input) Result[string] {
-//		strLen := len(str)
-//		startPos := in.Position
-//
-//		end := len(in.Code) - strLen
-//
-//		for in.Position <= end {
-//			p := in.Position
-//
-//			if in.Code[p:p+strLen] == str {
-//				in.SetPosition(p + strLen)
-//				return Result[string]{Value: in.Code[startPos:p]}
-//			}
-//
-//			in.Advance()
-//		}
-//
-//		in.SetPosition(startPos)
-//		return Result[string]{Failed: true}
-//	}
-//}
 
 // UntilString
 // Input is consumed including str, but str is not included in the result.

@@ -2,11 +2,14 @@ package git
 
 import (
 	. "gitfiend2/core/parser"
-	"regexp"
 	"strings"
 )
 
-var refNameParser = Regex(regexp.MustCompile(`[^,\s()]+`))
+// var refNameParser = Regex(regexp.MustCompile(`[^,\s()]+`))
+
+var refNameParser = TakeRuneWhile(func(r rune) bool {
+	return !IsWhiteSpace(r) && r != ',' && r != '(' && r != ')'
+})
 
 var PRefName = Map(
 	refNameParser, func(result string) RefInfoPart {

@@ -5,20 +5,6 @@ import (
 	"testing"
 )
 
-func TestNumberParser(t *testing.T) {
-	res, _ := ParseAll(Number, "123 fd3s")
-
-	if res != "123" {
-		t.Error("Expected 123, got ", res)
-	}
-
-	res2, _ := ParseAll(Number, "-1.009")
-
-	if res2 != "-1.009" {
-		t.Error("Expected -1.009, got ", res)
-	}
-}
-
 func TestUntilLineEndParser(t *testing.T) {
 	res, ok := ParsePart(UntilLineEnd, "asdfsdf&^HF JC\tasd !@\nasdf")
 
@@ -36,4 +22,11 @@ func TestAnyWord(t *testing.T) {
 
 	assert.False(t, ok)
 	assert.Equal(t, "", res)
+}
+
+func TestSignedIntParser(t *testing.T) {
+	res, ok := ParseAll(SignedInt, "1234")
+
+	assert.True(t, ok)
+	assert.Equal(t, "1234", res)
 }

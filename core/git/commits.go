@@ -33,7 +33,7 @@ var pSep = Map(And3(Ws, Rune(SepRune), Ws), func(result And3Result[string, rune,
 var pEmail = Or(pGroup, Ws)
 
 var pDate = Map(
-	And3(Uint, Ws, Int), func(result And3Result[string, string, string]) DateResult {
+	And3(UInt, Ws, SignedInt), func(result And3Result[string, string, string]) DateResult {
 		micro, _ := strconv.Atoi(result.R1)
 		adjustment, _ := strconv.Atoi(result.R3)
 

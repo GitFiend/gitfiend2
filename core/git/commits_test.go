@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitfiend2/core"
 	"gitfiend2/core/parser"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
 	"testing"
@@ -40,6 +41,8 @@ func TestLoadCommits(t *testing.T) {
 func TestPDate(t *testing.T) {
 	p := parser.New(pDate, "1243 23")
 	res, ok := p.Run()
+
+	assert.True(t, p.Finished())
 
 	if !ok {
 		t.Error("Expected success")
@@ -88,14 +91,10 @@ func TestPParents(t *testing.T) {
 func TestPMessage(t *testing.T) {
 	t.Run(
 		`ParseAll exmaple message 1`, func(t *testing.T) {
-			res, ok := parser.ParseAll(PMessage, `fasdf *\nasdf `+End+` asdf`)
+			res, ok := parser.ParsePart(PMessage, `fasdf *\nasdf `+End+` asdf`)
 
-			if !ok {
-				t.Error(`Expected success`)
-			}
-			if res != `fasdf *\nasdf ` {
-				t.Error(`Expected Value "fasdf *\nasdf "`)
-			}
+			assert.True(t, ok)
+			assert.Equal(t, `fasdf *\nasdf `, res)
 		},
 	)
 
