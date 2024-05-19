@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-// var refNameParser = Regex(regexp.MustCompile(`[^,\s()]+`))
-
 var refNameParser = TakeRuneWhile(func(r rune) bool {
 	return !IsWhiteSpace(r) && r != ',' && r != '(' && r != ')'
 })

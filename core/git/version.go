@@ -7,9 +7,9 @@ import (
 )
 
 type VersionInfo struct {
-	Major int
-	Minor int
-	Patch int
+	Major int `json:"major"`
+	Minor int `json:"minor"`
+	Patch int `json:"patch"`
 }
 
 func (v VersionInfo) Valid() bool {

@@ -1,0 +1,4 @@
+GET http://localhost:29998/f/git_version
+Accept: application/json
+
+{"repoPath": "."}

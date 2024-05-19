@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"gitfiend2/core/git"
+	"gitfiend2/core/server"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -19,8 +20,9 @@ var assets embed.FS
 //go:generate gofmt -w core/parser
 
 func main() {
-	runCommitsTest()
+	//runCommitsTest()
 	//runWails()
+	server.StartServer()
 }
 
 func runCommitsTest() {

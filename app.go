@@ -25,3 +25,15 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
+
+type MyLoot struct {
+	Gems       int `json:"gems"`
+	BottleCaps int `json:"bottleCaps"`
+}
+
+func (a *App) GetLoot(name string) MyLoot {
+	return MyLoot{
+		Gems:       0,
+		BottleCaps: 0,
+	}
+}
