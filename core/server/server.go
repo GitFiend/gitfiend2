@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"gitfiend2/core/git"
 	"io"
+	"net"
 	"net/http"
 	"os"
 )
 
-const port = 29998
+// const port = ":0"
+const port = ":29998"
 
 // StartServer
 // This is a server for testing against the current Rust implementation.
@@ -34,16 +36,20 @@ func StartServer() {
 		}
 	})
 
-	addr := fmt.Sprint(":", port)
-	err := http.ListenAndServe(addr, nil)
+	listener, err := net.Listen("tcp", port)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("PORT:%d\n", listener.Addr().(*net.TCPAddr).Port)
+
+	err = http.Serve(listener, nil)
 
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Printf("server closed\n")
 	} else if err != nil {
 		fmt.Printf("error starting server: %s\n", err)
 		os.Exit(1)
-	} else {
-		fmt.Println("Started server on port ", port)
 	}
 }
 
