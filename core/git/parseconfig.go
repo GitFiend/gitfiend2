@@ -16,6 +16,7 @@ type OtherKind string
 const (
 	Comment OtherKind = "comment"
 	Unknown           = "unknown"
+	Valid             = "valid"
 )
 
 var pHeading1 = Map(And3(Rune('['), AnyWord, Rune(']')),
@@ -37,3 +38,19 @@ var pRow = Map(And6(Ws, AnyWord, Ws, Rune('='), Ws, UntilLineEnd),
 	func(res And6Result[string, string, string, rune, string, string]) Row {
 		return Row{res.R2, res.R6}
 	})
+
+var pComment = Map(And3(Ws, Or(Rune(';'), Rune('#')), UntilLineEnd),
+	func(res And3Result[string, rune, string]) Other {
+		return Other{
+			Kind:  Comment,
+			Value: res.R3,
+		}
+	})
+
+var pUnknown = Map(And3(Not(pHeading), Not(pRow), UntilLineEnd),
+	func(res And3Result[bool, bool, string]) Other {
+		return Other{}
+	})
+
+//var pOther = Or()
+//var pRowOther = pOther

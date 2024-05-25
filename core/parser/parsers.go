@@ -35,6 +35,21 @@ func Word(word string) Parser[string] {
 	}
 }
 
+// Not Succeeds if it fails to parse. Doesn't change position.
+func Not[T any](parser Parser[T]) Parser[bool] {
+	return func(in *Input) (bool, bool) {
+		p := in.Position
+		_, ok := parser(in)
+
+		if ok {
+			in.SetPosition(p)
+			return true, false
+		}
+
+		return false, true
+	}
+}
+
 // Regex This is really slow, so only use it if that doesn't matter.
 func Regex(re *regexp.Regexp) Parser[string] {
 	return func(i *Input) (string, bool) {

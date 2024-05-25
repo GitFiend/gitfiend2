@@ -171,3 +171,10 @@ func TestMany(t *testing.T) {
 		t.Error(`Expected 3 results`)
 	}
 }
+
+func TestNotParser(t *testing.T) {
+	parser := Not(Word("hello"))
+
+	_, ok := ParsePart(parser, "hi")
+	assert.True(t, ok)
+}
