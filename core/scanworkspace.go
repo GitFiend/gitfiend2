@@ -32,6 +32,8 @@ func findRepos(dir string, repos []RepoPath, depth int) {
 	repo, ok := getGitRepo(dir)
 	if ok {
 		repos = append(repos, repo)
+
+		lookForSubmodules(dir)
 	}
 
 	if depth < maxDepth {
@@ -48,6 +50,24 @@ func findRepos(dir string, repos []RepoPath, depth int) {
 			}
 		}
 	}
+}
+
+func lookForSubmodules(dir string) []RepoPath {
+	file := path.Join(dir, ".gitmodules")
+	_, err := os.Stat(file)
+	if err != nil {
+		text, err := os.ReadFile(file)
+
+		if err != nil {
+			parseConfigFile(string(text))
+		}
+	}
+
+	return []RepoPath{}
+}
+
+func parseConfigFile(text string) {
+	// TODO
 }
 
 type RepoPath struct {

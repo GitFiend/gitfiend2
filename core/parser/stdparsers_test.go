@@ -30,3 +30,17 @@ func TestSignedIntParser(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "1234", res)
 }
+
+func TestStringLiteralParser(t *testing.T) {
+	res, ok := ParseAll(StringLiteral, `"abc abc"`)
+
+	assert.True(t, ok)
+	assert.Equal(t, "abc abc", res)
+}
+
+//func TestStringLiteralParserWithEscape(t *testing.T) {
+//	res, ok := ParseAll(StringLiteral, `"abc \"abc"`)
+//
+//	assert.True(t, ok)
+//	assert.Equal(t, "abc abc", res)
+//}

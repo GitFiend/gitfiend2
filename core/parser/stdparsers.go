@@ -21,3 +21,14 @@ var UInt = TakeRuneWhile(func(r rune) bool {
 var LineEnd = Or(Word("\n"), Word("\r\n"))
 
 var UntilLineEnd = UntilParser(LineEnd)
+
+// StringLiteral Note: Naive, doesn't handle escaped quotes.
+var StringLiteral = Map(And3(
+	Rune('"'),
+	TakeRuneWhile(func(r rune) bool {
+		return r != '"'
+	}),
+	Rune('"'),
+), func(res And3Result[rune, string, rune]) string {
+	return res.R2
+})
