@@ -2,8 +2,8 @@ package git
 
 import (
 	"fmt"
-	"gitfiend2/core"
 	. "gitfiend2/core/parser"
+	"gitfiend2/core/shared"
 	"os"
 	"strconv"
 )
@@ -129,7 +129,7 @@ func LoadCommits(options RunOpts, num uint) []Commit {
 		return nil
 	}
 
-	defer core.Elapsed("ParseAll commits")()
+	defer shared.Elapsed("ParseAll commits")()
 	res, _ := ParseAll(PCommits, textResult.Stdout)
 
 	return res

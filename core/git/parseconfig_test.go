@@ -2,8 +2,9 @@ package git
 
 import (
 	"gitfiend2/core/parser"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPHeading(t *testing.T) {

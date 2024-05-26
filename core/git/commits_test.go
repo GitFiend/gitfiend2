@@ -2,8 +2,8 @@ package git
 
 import (
 	"fmt"
-	"gitfiend2/core"
 	"gitfiend2/core/parser"
+	"gitfiend2/core/shared"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
@@ -30,7 +30,7 @@ func TestPCommitRow(t *testing.T) {
 }
 
 func TestLoadCommits(t *testing.T) {
-	defer core.Elapsed("LoadCommits")()
+	defer shared.Elapsed("LoadCommits")()
 
 	home, _ := os.UserHomeDir()
 	res := LoadCommits(RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 5000)
