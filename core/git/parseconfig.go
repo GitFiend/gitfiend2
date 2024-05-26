@@ -5,6 +5,25 @@ import (
 	"strings"
 )
 
+func ParseConfig(text string) ([]Row, bool) {
+	return ParseAll(pConfig, text)
+}
+
+func MakeConfigLog(text string) (string, bool) {
+	res, ok := ParseAll(pConfig, text)
+
+	if ok {
+		var log string
+		for _, row := range res {
+			if row.Data() {
+				log += row.String() + "\n"
+			}
+		}
+		return strings.Trim(log, "\n "), true
+	}
+	return "", false
+}
+
 type Row interface {
 	String() string
 	Data() bool
@@ -103,18 +122,3 @@ var pUnknown = Map(And3(Not(pHeading), Not(pRow), UntilLineEnd),
 	})
 
 var pOther = Or(pComment, pUnknown)
-
-func MakeConfigLog(text string) (string, bool) {
-	res, ok := ParseAll(pConfig, text)
-
-	if ok {
-		var log string
-		for _, row := range res {
-			if row.Data() {
-				log += row.String() + "\n"
-			}
-		}
-		return strings.Trim(log, "\n "), true
-	}
-	return "", false
-}

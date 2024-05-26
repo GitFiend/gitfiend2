@@ -12,7 +12,6 @@ func And1[T1 any](p1 Parser[T1]) Parser[And1Result[T1]] {
 
 		res1, ok1 := p1(in)
 		if ok1 {
-
 			return And1Result[T1]{
 				R1: res1,
 			}, true
@@ -38,7 +37,6 @@ func And2[T1 any, T2 any](p1 Parser[T1], p2 Parser[T2]) Parser[And2Result[T1, T2
 		if ok1 {
 			res2, ok2 := p2(in)
 			if ok2 {
-
 				return And2Result[T1, T2]{
 					R1: res1,
 					R2: res2,
@@ -70,7 +68,6 @@ func And3[T1 any, T2 any, T3 any](p1 Parser[T1], p2 Parser[T2], p3 Parser[T3]) P
 			if ok2 {
 				res3, ok3 := p3(in)
 				if ok3 {
-
 					return And3Result[T1, T2, T3]{
 						R1: res1,
 						R2: res2,
@@ -108,7 +105,6 @@ func And4[T1 any, T2 any, T3 any, T4 any](p1 Parser[T1], p2 Parser[T2], p3 Parse
 				if ok3 {
 					res4, ok4 := p4(in)
 					if ok4 {
-
 						return And4Result[T1, T2, T3, T4]{
 							R1: res1,
 							R2: res2,
@@ -152,7 +148,6 @@ func And5[T1 any, T2 any, T3 any, T4 any, T5 any](p1 Parser[T1], p2 Parser[T2], 
 					if ok4 {
 						res5, ok5 := p5(in)
 						if ok5 {
-
 							return And5Result[T1, T2, T3, T4, T5]{
 								R1: res1,
 								R2: res2,
@@ -202,7 +197,6 @@ func And6[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any](p1 Parser[T1], p2 Pars
 						if ok5 {
 							res6, ok6 := p6(in)
 							if ok6 {
-
 								return And6Result[T1, T2, T3, T4, T5, T6]{
 									R1: res1,
 									R2: res2,
@@ -258,7 +252,6 @@ func And7[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any](p1 Parser[T1],
 							if ok6 {
 								res7, ok7 := p7(in)
 								if ok7 {
-
 									return And7Result[T1, T2, T3, T4, T5, T6, T7]{
 										R1: res1,
 										R2: res2,
@@ -320,7 +313,6 @@ func And8[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any](p1 Par
 								if ok7 {
 									res8, ok8 := p8(in)
 									if ok8 {
-
 										return And8Result[T1, T2, T3, T4, T5, T6, T7, T8]{
 											R1: res1,
 											R2: res2,
@@ -388,7 +380,6 @@ func And9[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 any
 									if ok8 {
 										res9, ok9 := p9(in)
 										if ok9 {
-
 											return And9Result[T1, T2, T3, T4, T5, T6, T7, T8, T9]{
 												R1: res1,
 												R2: res2,
@@ -462,7 +453,6 @@ func And10[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 an
 										if ok9 {
 											res10, ok10 := p10(in)
 											if ok10 {
-
 												return And10Result[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10]{
 													R1:  res1,
 													R2:  res2,
@@ -542,7 +532,6 @@ func And11[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 an
 											if ok10 {
 												res11, ok11 := p11(in)
 												if ok11 {
-
 													return And11Result[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11]{
 														R1:  res1,
 														R2:  res2,
@@ -628,7 +617,6 @@ func And12[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 an
 												if ok11 {
 													res12, ok12 := p12(in)
 													if ok12 {
-
 														return And12Result[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12]{
 															R1:  res1,
 															R2:  res2,
@@ -720,7 +708,6 @@ func And13[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 an
 													if ok12 {
 														res13, ok13 := p13(in)
 														if ok13 {
-
 															return And13Result[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13]{
 																R1:  res1,
 																R2:  res2,
@@ -818,7 +805,6 @@ func And14[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 an
 														if ok13 {
 															res14, ok14 := p14(in)
 															if ok14 {
-
 																return And14Result[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14]{
 																	R1:  res1,
 																	R2:  res2,
@@ -922,7 +908,6 @@ func And15[T1 any, T2 any, T3 any, T4 any, T5 any, T6 any, T7 any, T8 any, T9 an
 															if ok14 {
 																res15, ok15 := p15(in)
 																if ok15 {
-
 																	return And15Result[T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15]{
 																		R1:  res1,
 																		R2:  res2,

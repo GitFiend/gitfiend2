@@ -91,8 +91,7 @@ func makeFunc(num int) string {
 	return func(in *Input) (%s, bool) {
 		start := in.Position
 
-%s
-%s
+%s%s
 %s
 	in.SetPosition(start)
 	return %s{}, false

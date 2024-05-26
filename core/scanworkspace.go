@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+	"gitfiend2/core/git"
 	"os"
 	"path"
 	"slices"
@@ -59,15 +61,14 @@ func lookForSubmodules(dir string) []RepoPath {
 		text, err := os.ReadFile(file)
 
 		if err != nil {
-			parseConfigFile(string(text))
+			rows, ok := git.ParseConfig(string(text))
+			if ok {
+				fmt.Println(rows)
+			}
 		}
 	}
 
 	return []RepoPath{}
-}
-
-func parseConfigFile(text string) {
-	// TODO
 }
 
 type RepoPath struct {
