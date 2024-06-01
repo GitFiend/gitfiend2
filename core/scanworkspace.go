@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"gitfiend2/core/git"
 	"os"
 	"path"
@@ -32,13 +31,18 @@ func ScanWorkspace(options ScanOptions) []RepoPath {
 const maxDepth = 5
 const maxDirSize = 50
 
+// TODO: We are looking for submodules and also finding repos through traversing.
+// This could make duplicates, and is wasteful?
 func findRepos(dir string, repos *[]RepoPath, depth int) error {
 	repo, ok := getGitRepo(dir)
 	if ok {
 		*repos = append(*repos, repo)
 		more, err := lookForSubmodules(dir)
-		if err == nil {
-			fmt.Println("found submodules: ", more)
+		if err != nil {
+			return err
+		}
+		if len(more) > 0 {
+			*repos = append(*repos, more...)
 		}
 	}
 
