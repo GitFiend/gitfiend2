@@ -15,7 +15,7 @@ func MakeConfigLog(text string) (string, bool) {
 	if ok {
 		var log string
 		for _, row := range res {
-			if row.Data() {
+			if row.IsData() {
 				log += row.String() + "\n"
 			}
 		}
@@ -26,7 +26,7 @@ func MakeConfigLog(text string) (string, bool) {
 
 type Row interface {
 	String() string
-	Data() bool
+	IsData() bool
 }
 
 type Section struct {
@@ -39,13 +39,13 @@ func (s Section) String() string {
 	heading := s.Heading.String()
 
 	for _, row := range s.Rows {
-		if row.Data() {
+		if row.IsData() {
 			res += heading + "." + row.String() + "\n"
 		}
 	}
 	return strings.Trim(res, "\n ")
 }
-func (s Section) Data() bool {
+func (s Section) IsData() bool {
 	return true
 }
 
@@ -64,7 +64,7 @@ type DataRow [2]string
 func (r DataRow) String() string {
 	return r[0] + "=" + r[1]
 }
-func (r DataRow) Data() bool {
+func (r DataRow) IsData() bool {
 	if r[0] == "" || r[1] == "" {
 		return false
 	}
@@ -77,13 +77,13 @@ type Comment string
 func (c Comment) String() string {
 	return string(c)
 }
-func (c Comment) Data() bool {
+func (c Comment) IsData() bool {
 	return false
 }
 func (o Unknown) String() string {
 	return string(o)
 }
-func (o Unknown) Data() bool {
+func (o Unknown) IsData() bool {
 	return false
 }
 
