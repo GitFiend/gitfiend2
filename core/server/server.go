@@ -61,6 +61,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 		res, ok = CallFunc(ReqGitVersion, reqData)
 	case "scan_workspace":
 		res, ok = CallFunc(ReqScanWorkspace, reqData)
+	case "is_rebase_in_progress":
+		res, ok = CallFunc(IsRebaseInProgress, reqData)
 	}
 
 	if ok {

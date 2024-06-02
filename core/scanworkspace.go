@@ -106,7 +106,7 @@ func lookForSubmodules(dir string) ([]RepoPath, error) {
 
 type RepoPath struct {
 	Path string
-	// This is the path + .git file/dir
+	// The path to .git folder. If we have a submodule, it may be in the root repo?
 	GitPath   string
 	SubModule bool
 }
