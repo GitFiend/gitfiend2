@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitfiend2/core/git"
 	"io"
 	"net"
 	"net/http"
@@ -53,26 +52,23 @@ func StartServer() {
 	}
 }
 
-type ReqOptions struct {
-	RepoPath string `json:"repoPath"`
-}
-
-func ReqGitVersion(_ ReqOptions) git.VersionInfo {
-	git.LoadGitVersion()
-	return git.Version
-}
-
 func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
-	if name == "git_version" {
-		res, ok := CallFunc(ReqGitVersion, reqData)
+	var res any
+	var ok bool
 
-		if ok {
-			fmt.Println("Func Result: ", res)
-			resBytes, err := json.Marshal(res)
+	switch name {
+	case "git_version":
+		res, ok = CallFunc(ReqGitVersion, reqData)
+	case "scan_workspace":
+		res, ok = CallFunc(ReqScanWorkspace, reqData)
+	}
 
-			if err == nil {
-				return resBytes, true
-			}
+	if ok {
+		fmt.Println("Func Result: ", res)
+		resBytes, err := json.Marshal(res)
+
+		if err == nil {
+			return resBytes, true
 		}
 	}
 

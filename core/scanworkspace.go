@@ -11,8 +11,8 @@ import (
 )
 
 type ScanOptions struct {
-	RepoPath          string
-	WorkspacesEnabled bool
+	RepoPath          string `json:"repoPath"`
+	WorkspacesEnabled bool   `json:"workspacesEnabled"`
 }
 
 func ScanWorkspace(options ScanOptions) []RepoPath {
