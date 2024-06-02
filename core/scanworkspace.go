@@ -6,6 +6,8 @@ import (
 	"path"
 	"slices"
 	"strings"
+
+	"golang.org/x/exp/maps"
 )
 
 type ScanOptions struct {
@@ -20,9 +22,9 @@ func ScanWorkspace(options ScanOptions) []RepoPath {
 			return []RepoPath{repo}
 		}
 	} else {
-		var repos []RepoPath
-		findRepos(options.RepoPath, &repos, 0)
-		return repos
+		repos := map[string]RepoPath{}
+		findRepos(options.RepoPath, repos, 0)
+		return maps.Values(repos)
 	}
 
 	return []RepoPath{}
@@ -31,18 +33,19 @@ func ScanWorkspace(options ScanOptions) []RepoPath {
 const maxDepth = 5
 const maxDirSize = 50
 
-// TODO: We are looking for submodules and also finding repos through traversing.
-// This could make duplicates, and is wasteful?
-func findRepos(dir string, repos *[]RepoPath, depth int) error {
+func findRepos(dir string, repos map[string]RepoPath, depth int) error {
 	repo, ok := getGitRepo(dir)
 	if ok {
-		*repos = append(*repos, repo)
-		more, err := lookForSubmodules(dir)
+		repos[repo.Path] = repo
+
+		submodules, err := lookForSubmodules(dir)
 		if err != nil {
 			return err
 		}
-		if len(more) > 0 {
-			*repos = append(*repos, more...)
+		if len(submodules) > 0 {
+			for _, found := range submodules {
+				repos[found.Path] = found
+			}
 		}
 	}
 
@@ -102,8 +105,8 @@ func lookForSubmodules(dir string) ([]RepoPath, error) {
 }
 
 type RepoPath struct {
-	// TODO: What is this vs GitPath
-	Path      string
+	Path string
+	// This is the path + .git file/dir
 	GitPath   string
 	SubModule bool
 }
