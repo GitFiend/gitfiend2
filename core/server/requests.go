@@ -12,6 +12,11 @@ type ReqOptions struct {
 	RepoPath string `json:"repoPath"`
 }
 
+type ReqResult[T any] struct {
+	Ok  T
+	Err error
+}
+
 func ReqGitVersion(_ ReqOptions) git.VersionInfo {
 	git.LoadGitVersion()
 	return git.Version

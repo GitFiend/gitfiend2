@@ -23,8 +23,10 @@ func ScanWorkspace(options ScanOptions) []RepoPath {
 		}
 	} else {
 		repos := map[string]RepoPath{}
-		findRepos(options.RepoPath, repos, 0)
-		return maps.Values(repos)
+		err := findRepos(options.RepoPath, repos, 0)
+		if err == nil {
+			return maps.Values(repos)
+		}
 	}
 
 	return []RepoPath{}
@@ -55,7 +57,10 @@ func findRepos(dir string, repos map[string]RepoPath, depth int) error {
 			if len(entries) < maxDirSize || depth == 0 {
 				for _, entry := range entries {
 					if entry.IsDir() && entry.Name()[0] != '.' {
-						findRepos(path.Join(dir, entry.Name()), repos, depth+1)
+						err := findRepos(path.Join(dir, entry.Name()), repos, depth+1)
+						if err != nil {
+							return err
+						}
 					}
 				}
 			}
@@ -65,7 +70,7 @@ func findRepos(dir string, repos map[string]RepoPath, depth int) error {
 	return nil
 }
 
-// Check if there's a submodules file and read repos from it?
+// Check if there's a submodule file and read repos from it?
 func lookForSubmodules(dir string) ([]RepoPath, error) {
 	file := path.Join(dir, ".gitmodules")
 	_, err := os.Stat(file)

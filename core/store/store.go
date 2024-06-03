@@ -5,19 +5,24 @@ import (
 	"slices"
 )
 
-var RepoPaths = []core.RepoPath{}
+var repoPaths []core.RepoPath
+var commitsAndRefs CommitsAndRefs
 
 func SetRepoPaths(repos []core.RepoPath) {
-	RepoPaths = repos
+	repoPaths = repos
 }
 
 func GetRepoPath(repoPath string) (core.RepoPath, bool) {
-	i := slices.IndexFunc(RepoPaths, func(p core.RepoPath) bool {
+	i := slices.IndexFunc(repoPaths, func(p core.RepoPath) bool {
 		return p.Path == repoPath
 	})
 
 	if i >= 0 {
-		return RepoPaths[i], true
+		return repoPaths[i], true
 	}
 	return core.RepoPath{}, false
+}
+
+func SetCommitsAndRefs(c CommitsAndRefs) {
+	commitsAndRefs = c
 }
