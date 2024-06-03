@@ -81,8 +81,8 @@ var PCommitRow = Map(
 			[]RefInfoPart,
 			string,
 		],
-	) Commit {
-		c := Commit{
+	) CommitInfo {
+		c := CommitInfo{
 			Author:    result.R1,
 			Email:     result.R3,
 			Date:      result.R5,
@@ -110,7 +110,7 @@ var PCommits = Many(PCommitRow)
 
 // LoadCommits
 // Intentional copy of options, so we can modify it.
-func LoadCommits(options RunOpts, num uint) []Commit {
+func LoadCommits(options RunOpts, num uint) []CommitInfo {
 	fmt.Println(os.Environ())
 
 	options.Args = []string{

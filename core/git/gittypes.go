@@ -26,7 +26,24 @@ const (
 	Remote
 )
 
-// TODO: Pull out refs
+type CommitInfo struct {
+	Author    string
+	Email     string
+	Date      DateResult
+	Id        string
+	Index     int
+	ParentIds []string // Ordered by date?
+	IsMerge   bool
+	Message   string
+	StashId   string
+	Ref       []RefInfo
+
+	// Filtered means not included. Relating to Find feature?
+	// TODO: Is this still used?
+	Filtered   bool
+	NumSkipped int
+}
+
 type Commit struct {
 	Author    string     `json:"author"`
 	Email     string     `json:"email"`
@@ -37,7 +54,7 @@ type Commit struct {
 	IsMerge   bool       `json:"isMerge"`
 	Message   string     `json:"message"`
 	StashId   string     `json:"stashId"`
-	Ref       []RefInfo  `json:"refs"`
+	Ref       []string   `json:"refs"`
 
 	// Filtered means not included. Relating to Find feature?
 	// TODO: Is this still used?

@@ -1,6 +1,9 @@
 package store
 
-import "gitfiend2/core/git"
+import (
+	"gitfiend2/core/git"
+	"strings"
+)
 
 type ReqCommitsOptions struct {
 	RepoPath    string             `json:"repoPath"`
@@ -36,4 +39,44 @@ func loadCommitsUnfiltered(
 	}
 
 	return commitsAndRefs
+}
+
+func convertCommitInfo(info []git.CommitInfo) ([]git.Commit, []git.RefInfo) {
+	commits := make([]git.Commit, len(info))
+	refs := []git.RefInfo{}
+
+	for i, c := range info {
+		commits[i] = convertCommit(c)
+		for _, r := range c.Ref {
+			if !strings.Contains(r.FullName, "HEAD") {
+				refs = append(refs, r)
+			}
+		}
+	}
+	return commits, refs
+}
+
+func convertCommit(info git.CommitInfo) git.Commit {
+	refIds := make([]string, len(info.Ref))
+	for i, ref := range info.Ref {
+		refIds[i] = ref.Id
+	}
+	return git.Commit{
+		Author:     info.Author,
+		Email:      info.Email,
+		Date:       info.Date,
+		Id:         info.Id,
+		Index:      info.Index,
+		ParentIds:  info.ParentIds,
+		IsMerge:    info.IsMerge,
+		Message:    info.Message,
+		StashId:    info.StashId,
+		Ref:        refIds,
+		Filtered:   info.Filtered,
+		NumSkipped: info.NumSkipped,
+	}
+}
+
+func finishRefInfoProperties(refs []git.RefInfo, repoPath string) {
+	//
 }
