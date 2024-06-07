@@ -8,7 +8,7 @@ import (
 )
 
 type GitConfig struct {
-	Entries    map[string]string
+	Entries    []git.Row
 	Remotes    map[string]string
 	Submodules map[string]string
 }
@@ -32,11 +32,13 @@ func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 	}
 
 	remotes := map[string]string{}
+	submodules := map[string]string{}
 
 	for _, row := range rows {
 		switch r := row.(type) {
 		case git.Section:
-			if r.Heading.Key() == "remote" {
+			key := r.Heading.Key()
+			if key == "remote" {
 				for _, r2 := range r.Rows {
 					switch r3 := r2.(type) {
 					case git.DataRow:
@@ -46,10 +48,20 @@ func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 						break
 					}
 				}
+			} else if key == "submodule" {
+				for _, r2 := range r.Rows {
+					switch r3 := r2.(type) {
+					case git.DataRow:
+						if r3.Key() == "url" {
+							submodules[r.Heading.Value()] = r3.Value()
+						}
+						break
+					}
+				}
 			}
 		case git.DataRow:
 		}
 	}
 
-	return GitConfig{Remotes: remotes}, nil
+	return GitConfig{Remotes: remotes, Submodules: submodules, Entries: rows}, nil
 }
