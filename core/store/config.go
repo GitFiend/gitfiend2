@@ -31,15 +31,25 @@ func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 		return GitConfig{}, fmt.Errorf("failed to parse config %s", configPath)
 	}
 
+	remotes := map[string]string{}
+
 	for _, row := range rows {
 		switch r := row.(type) {
 		case git.Section:
 			if r.Heading.Key() == "remote" {
-				//
+				for _, r2 := range r.Rows {
+					switch r3 := r2.(type) {
+					case git.DataRow:
+						if r3.Key() == "url" {
+							remotes[r.Heading.Value()] = r3.Value()
+						}
+						break
+					}
+				}
 			}
 		case git.DataRow:
 		}
 	}
 
-	return GitConfig{}, nil
+	return GitConfig{Remotes: remotes}, nil
 }
