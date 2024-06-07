@@ -15,7 +15,7 @@ type GitConfig struct {
 
 func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 	repo, ok := GetRepoPath(repoPath)
-	if ok {
+	if !ok {
 		return GitConfig{}, fmt.Errorf("couldn't load config for %s", repoPath)
 	}
 
@@ -34,7 +34,7 @@ func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 	for _, row := range rows {
 		switch r := row.(type) {
 		case git.Section:
-			if r.Heading[0] == "remote" {
+			if r.Heading.Key() == "remote" {
 				//
 			}
 		case git.DataRow:

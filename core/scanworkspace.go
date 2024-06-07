@@ -57,9 +57,12 @@ func findRepos(dir string, repos map[string]RepoPath, depth int) error {
 			if len(entries) < maxDirSize || depth == 0 {
 				for _, entry := range entries {
 					if entry.IsDir() && entry.Name()[0] != '.' {
-						err := findRepos(path.Join(dir, entry.Name()), repos, depth+1)
-						if err != nil {
-							return err
+						p := path.Join(dir, entry.Name())
+						if _, alreadyExists := repos[p]; !alreadyExists {
+							err := findRepos(p, repos, depth+1)
+							if err != nil {
+								return err
+							}
 						}
 					}
 				}
@@ -75,14 +78,16 @@ func lookForSubmodules(dir string) ([]RepoPath, error) {
 	file := path.Join(dir, ".gitmodules")
 	_, err := os.Stat(file)
 	if err != nil {
-		return nil, err
+		// No submodules to be found. Not an error.
+		return nil, nil
 	}
 
 	text, err := os.ReadFile(file)
-	var paths []RepoPath
 	if err != nil {
 		return nil, err
 	}
+
+	var paths []RepoPath
 
 	rows, ok := git.ParseConfig(string(text))
 	if ok {
@@ -153,7 +158,7 @@ func getGitRepo(dir string) (RepoPath, bool) {
 func readSubmoduleFile(filePath string) string {
 	data, err := os.ReadFile(filePath)
 
-	if err != nil {
+	if err == nil {
 		return parseSubmoduleFile(string(data))
 	}
 	return ""

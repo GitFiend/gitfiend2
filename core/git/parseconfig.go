@@ -58,6 +58,12 @@ func (h Heading) String() string {
 		return h[0] + "." + h[1]
 	}
 }
+func (h Heading) Key() string {
+	return h[0]
+}
+func (h Heading) Value() string {
+	return h[1]
+}
 
 type DataRow [2]string
 
@@ -69,6 +75,12 @@ func (r DataRow) IsData() bool {
 		return false
 	}
 	return true
+}
+func (r DataRow) Key() string {
+	return r[0]
+}
+func (r DataRow) Value() string {
+	return r[1]
 }
 
 type Unknown string
