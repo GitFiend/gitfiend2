@@ -1,7 +1,6 @@
 package server
 
 import (
-	"gitfiend2/core"
 	"gitfiend2/core/git"
 	"gitfiend2/core/store"
 	"os"
@@ -22,9 +21,8 @@ func ReqGitVersion(_ ReqOptions) git.VersionInfo {
 	return git.Version
 }
 
-func ReqScanWorkspace(options core.ScanOptions) []string {
-	res := core.ScanWorkspace(options)
-
+func ReqScanWorkspace(options store.ScanOptions) []string {
+	res := store.ScanWorkspace(options)
 	store.SetRepoPaths(res)
 
 	var paths []string

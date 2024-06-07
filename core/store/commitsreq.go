@@ -43,7 +43,7 @@ func loadCommitsUnfiltered(
 
 func convertCommitInfo(info []git.CommitInfo) ([]git.Commit, []git.RefInfo) {
 	commits := make([]git.Commit, len(info))
-	refs := []git.RefInfo{}
+	var refs []git.RefInfo
 
 	for i, c := range info {
 		commits[i] = convertCommit(c)
