@@ -49,6 +49,20 @@ func (s Section) IsData() bool {
 	return true
 }
 
+func (s Section) Entries() [][2]string {
+	heading := s.Heading.String()
+	var entries [][2]string
+
+	for _, row := range s.Rows {
+		switch r := row.(type) {
+		case DataRow:
+			entries = append(entries, [2]string{heading + r[0], r[1]})
+			break
+		}
+	}
+	return entries
+}
+
 type Heading [2]string
 
 func (h Heading) String() string {

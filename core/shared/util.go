@@ -35,3 +35,12 @@ func Elapsed(name string) func() {
 		fmt.Printf("\n%s took %v\n", name, time.Since(start))
 	}
 }
+
+func Find[T any](slice []T, f func(value T) bool) (T, bool) {
+	for _, val := range slice {
+		if f(val) {
+			return val, true
+		}
+	}
+	return *new(T), false
+}

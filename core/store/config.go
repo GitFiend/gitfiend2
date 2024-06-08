@@ -8,7 +8,7 @@ import (
 )
 
 type GitConfig struct {
-	Entries    []git.Row
+	Entries    map[string]string
 	Remotes    map[string]string
 	Submodules map[string]string
 }
@@ -33,10 +33,15 @@ func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 
 	remotes := map[string]string{}
 	submodules := map[string]string{}
+	entries := map[string]string{}
 
 	for _, row := range rows {
 		switch r := row.(type) {
 		case git.Section:
+			for _, e := range r.Entries() {
+				entries[e[0]] = e[1]
+			}
+
 			key := r.Heading.Key()
 			if key == "remote" {
 				for _, r2 := range r.Rows {
@@ -60,8 +65,30 @@ func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
 				}
 			}
 		case git.DataRow:
+			entries[r[0]] = r[1]
+			break
 		}
 	}
+	return GitConfig{Remotes: remotes, Submodules: submodules, Entries: entries}, nil
+}
 
-	return GitConfig{Remotes: remotes, Submodules: submodules, Entries: rows}, nil
+func (c *GitConfig) GetRemoteForBranch(shortName string) string {
+	pushRemote, ok := c.Entries["branch."+shortName+".pushremote"]
+	if ok {
+		return pushRemote
+	}
+	pushDefault, ok := c.Entries["remote.pushdefault"]
+	if ok {
+		return pushDefault
+	}
+	remote, ok := c.Entries["branch."+shortName+".remote"]
+	if ok {
+		return remote
+	}
+	return "origin"
+}
+
+func (c *GitConfig) GetTrackingBranchName(localBranch string) string {
+	remote := c.GetRemoteForBranch(localBranch)
+	return "refs/remotes/" + remote + "/" + localBranch
 }

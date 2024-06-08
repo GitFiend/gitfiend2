@@ -52,32 +52,7 @@ func StartServer() {
 	}
 }
 
-func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
-	var res any
-	var ok bool
-
-	switch name {
-	case "git_version":
-		res, ok = CallFunc(ReqGitVersion, reqData)
-	case "scan_workspace":
-		res, ok = CallFunc(ReqScanWorkspace, reqData)
-	case "is_rebase_in_progress":
-		res, ok = CallFunc(IsRebaseInProgress, reqData)
-	}
-
-	if ok {
-		fmt.Println("Func Result: ", res)
-		resBytes, err := json.Marshal(res)
-
-		if err == nil {
-			return resBytes, true
-		}
-	}
-
-	return []byte{}, false
-}
-
-func CallFunc[P, R any](f func(p P) R, data []byte) (R, bool) {
+func callFunc[P, R any](f func(p P) R, data []byte) (R, bool) {
 	var result P
 	err := json.Unmarshal(data, &result)
 

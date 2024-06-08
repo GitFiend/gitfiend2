@@ -6,6 +6,7 @@ import (
 
 var repoPaths []RepoPath
 var commitsAndRefs CommitsAndRefs
+var configs = map[string]GitConfig{}
 
 func SetRepoPaths(repos []RepoPath) {
 	repoPaths = repos
@@ -20,6 +21,14 @@ func GetRepoPath(repoPath string) (RepoPath, bool) {
 		return repoPaths[i], true
 	}
 	return RepoPath{}, false
+}
+
+func SetConfig(repoPath string, c GitConfig) {
+	configs[repoPath] = c
+}
+func GetConfig(repoPath string) (GitConfig, bool) {
+	c, ok := configs[repoPath]
+	return c, ok
 }
 
 func SetCommitsAndRefs(c CommitsAndRefs) {

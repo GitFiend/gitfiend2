@@ -2,6 +2,7 @@ package store
 
 import (
 	"gitfiend2/core/git"
+	"gitfiend2/core/shared"
 	"strings"
 )
 
@@ -78,5 +79,35 @@ func convertCommit(info git.CommitInfo) git.Commit {
 }
 
 func finishRefInfoProperties(refs []git.RefInfo, repoPath string) {
-	//
+	c, ok := GetConfig(repoPath)
+	if !ok {
+		panic("Expected " + repoPath + " config to be already loaded")
+	}
+
+	for _, ref := range refs {
+		if ref.RemoteName == "" {
+			ref.RemoteName = c.GetRemoteForBranch(ref.ShortName)
+		}
+		ref.SiblingId = getSiblingIdForRef(ref, refs)
+	}
+}
+
+func getSiblingIdForRef(ref git.RefInfo, refs []git.RefInfo) string {
+	if ref.Location == git.Remote {
+		local, ok := shared.Find(refs, func(r git.RefInfo) bool {
+			return r.Location == git.Local && r.ShortName == ref.ShortName
+		})
+		if ok {
+			return local.Id
+		}
+	}
+	remote, ok := shared.Find(refs, func(r git.RefInfo) bool {
+		return r.Location == git.Remote &&
+			r.ShortName == ref.ShortName &&
+			r.RemoteName == ref.RemoteName
+	})
+	if ok {
+		return remote.Id
+	}
+	return ""
 }
