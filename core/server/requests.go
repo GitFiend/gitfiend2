@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitfiend2/core/git"
+	"gitfiend2/core/shared"
 	"gitfiend2/core/store"
 	"os"
 	"path"
@@ -22,6 +23,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 		res, ok = callFunc(isRebaseInProgress, reqData)
 	case "load_repo_status":
 		res, ok = callFunc(reqRepoStatus, reqData)
+	case "load_commits_and_refs":
+		res, ok = callFunc(loadCommitsAndRefs, reqData)
 	}
 
 	if ok {
@@ -51,22 +54,19 @@ func reqGitVersion(_ ReqOptions) git.VersionInfo {
 }
 
 func reqScanWorkspace(options store.ScanOptions) []string {
-	res := store.ScanWorkspace(options)
-	store.SetRepoPaths(res)
+	res := Store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
 
-	var paths []string
-	for _, repo := range res {
-		paths = append(paths, repo.Path)
-	}
-	return paths
+	return shared.Map(res, func(r store.RepoPath) string {
+		return r.Path
+	})
 }
 
 func reqRepoStatus(o ReqOptions) store.RepoStatus {
-	return store.LoadRepoStatus(o.RepoPath)
+	return Store.LoadRepoStatus(o.RepoPath)
 }
 
 func isRebaseInProgress(options ReqOptions) bool {
-	p, found := store.GetRepoPath(options.RepoPath)
+	p, found := Store.GetRepoPath(options.RepoPath)
 
 	if found {
 		file := path.Join(p.GitPath, "rebase-merge")
@@ -75,4 +75,8 @@ func isRebaseInProgress(options ReqOptions) bool {
 		return err == nil
 	}
 	return false
+}
+
+func loadCommitsAndRefs(o store.ReqCommitsOptions) store.CommitsAndRefs {
+	return Store.LoadCommitsAndRefs(o)
 }

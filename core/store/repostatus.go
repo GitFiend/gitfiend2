@@ -3,11 +3,11 @@ package store
 type RepoStatus struct {
 }
 
-func LoadRepoStatus(repoPath string) RepoStatus {
-	c, err := LoadConfigFromDisk(repoPath)
+func (s *Store) LoadRepoStatus(repoPath string) RepoStatus {
+	c, err := s.LoadConfigFromDisk(repoPath)
 
 	if err == nil {
-		SetConfig(repoPath, c)
+		s.SetConfig(repoPath, c)
 	}
 
 	return RepoStatus{}

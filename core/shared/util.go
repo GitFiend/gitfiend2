@@ -44,3 +44,15 @@ func Find[T any](slice []T, f func(value T) bool) (T, bool) {
 	}
 	return *new(T), false
 }
+
+func Map[T any, V any](slice []T, f func(value T) V) []V {
+	res := make([]V, len(slice))
+	for i, v := range slice {
+		res[i] = f(v)
+	}
+	return res
+}
+
+//type Vec[T any] []T
+//
+//func (v Vec[T]) Map() {}

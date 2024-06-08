@@ -33,7 +33,7 @@ func TestLoadCommits(t *testing.T) {
 	defer shared.Elapsed("LoadCommits")()
 
 	home, _ := os.UserHomeDir()
-	res := LoadCommits(RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 5000)
+	res := LoadCommits(path.Join(home, "Repos", "vscode"), 5000)
 
 	println(len(res))
 }
@@ -53,6 +53,13 @@ func TestPDate(t *testing.T) {
 	if res.Adjustment != 23 {
 		t.Error("Expected 23, got ", res.Adjustment)
 	}
+}
+
+func TestSliceExpectations(t *testing.T) {
+	ids := []string{"1", "2", "3"}
+	trimmed := ids[:1]
+
+	assert.Equal(t, []string{"1"}, trimmed)
 }
 
 func TestPParents(t *testing.T) {

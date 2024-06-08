@@ -108,20 +108,21 @@ var PCommitRow = Map(
 
 var PCommits = Many(PCommitRow)
 
-// LoadCommits
-// Intentional copy of options, so we can modify it.
-func LoadCommits(options RunOpts, num uint) []CommitInfo {
+func LoadCommits(repoPath string, num int) []CommitInfo {
 	fmt.Println(os.Environ())
 
-	options.Args = []string{
-		"log",
-		"--branches",
-		"--tags",
-		"--remotes",
-		"--decorate=full",
-		prettyFormatted,
-		"-n" + strconv.Itoa(int(num)),
-		"--date=raw",
+	options := RunOpts{
+		RepoPath: repoPath,
+		Args: []string{
+			"log",
+			"--branches",
+			"--tags",
+			"--remotes",
+			"--decorate=full",
+			prettyFormatted,
+			"-n" + strconv.Itoa(num),
+			"--date=raw",
+		},
 	}
 
 	textResult, err := RunGit(options)

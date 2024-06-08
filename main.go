@@ -35,7 +35,7 @@ func runCommitsTest() {
 		return
 	}
 
-	res := git.LoadCommits(git.RunOpts{RepoPath: path.Join(home, "Repos", "vscode")}, 1000)
+	res := git.LoadCommits(path.Join(home, "Repos", "vscode"), 1000)
 	duration := time.Since(start)
 	fmt.Println("********** vscode: ", duration.Milliseconds(), "ms")
 	fmt.Printf("Loaded %d commits", len(res))

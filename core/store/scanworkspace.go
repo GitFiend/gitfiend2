@@ -15,15 +15,21 @@ type ScanOptions struct {
 	WorkspacesEnabled bool   `json:"workspacesEnabled"`
 }
 
-func ScanWorkspace(options ScanOptions) []RepoPath {
-	if !options.WorkspacesEnabled {
-		repo, ok := getGitRepo(options.RepoPath)
+func (s *Store) ScanWorkspace(repoPath string, workspacesEnabled bool) []RepoPath {
+	repos := scanWorkspace(repoPath, workspacesEnabled)
+	s.SetRepoPaths(repos)
+	return repos
+}
+
+func scanWorkspace(repoPath string, workspacesEnabled bool) []RepoPath {
+	if !workspacesEnabled {
+		repo, ok := getGitRepo(repoPath)
 		if ok {
 			return []RepoPath{repo}
 		}
 	} else {
 		repos := map[string]RepoPath{}
-		err := findRepos(options.RepoPath, repos, 0)
+		err := findRepos(repoPath, repos, 0)
 		if err == nil {
 			return maps.Values(repos)
 		}

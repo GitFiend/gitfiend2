@@ -1,8 +1,10 @@
 package store
 
 import (
+	"cmp"
 	"gitfiend2/core/git"
 	"gitfiend2/core/shared"
+	"slices"
 	"strings"
 )
 
@@ -19,49 +21,78 @@ type CommitsAndRefs struct {
 	Refs    []git.RefInfo `json:"refs"`
 }
 
-func LoadCommitsAndRefs(o ReqCommitsOptions) CommitsAndRefs {
-	res := loadCommitsUnfiltered(o.RepoPath, o.NumCommits, o.Fast, o.SkipStashes)
+func (s *Store) LoadCommitsAndRefs(o ReqCommitsOptions) CommitsAndRefs {
+	res := s.loadCommitsUnfiltered(o.RepoPath, o.NumCommits, o.Fast, o.SkipStashes)
 
 	// TODO: Filters.
 	return res
 }
 
-func loadCommitsUnfiltered(
+func (s *Store) loadCommitsUnfiltered(
 	repoPath string,
 	numCommits int,
 	cacheOnly bool,
-	skipStashes bool) CommitsAndRefs {
+	skipStashes bool,
+) CommitsAndRefs {
 	if cacheOnly {
-		return commitsAndRefs
+		return s.commitsAndRefs
 	}
+
+	var commitInfo []git.CommitInfo
 
 	if skipStashes {
-		// load commits
+		commitInfo = git.LoadCommits(repoPath, numCommits)
+	} else {
+		var stashes []git.CommitInfo
+
+		reqCommits := make(chan []git.CommitInfo)
+		reqStashes := make(chan []git.CommitInfo)
+
+		go func() {
+			reqCommits <- git.LoadCommits(repoPath, numCommits)
+		}()
+		go func() {
+			reqStashes <- git.LoadStashes(repoPath)
+		}()
+
+		commitInfo, stashes = <-reqCommits, <-reqStashes
+		commitInfo = append(commitInfo, stashes...)
+
+		// TODO: Check this.
+		slices.SortFunc(commitInfo, func(a, b git.CommitInfo) int {
+			return cmp.Compare(a.StashId, b.StashId)
+		})
 	}
 
-	return commitsAndRefs
+	commits, refs := s.convertCommitInfo(commitInfo, repoPath)
+	refs = s.finishRefInfoProperties(refs, repoPath)
+
+	result := CommitsAndRefs{
+		Commits: commits,
+		Refs:    refs,
+	}
+
+	s.SetCommitsAndRefs(result)
+	return result
 }
 
-func convertCommitInfo(info []git.CommitInfo) ([]git.Commit, []git.RefInfo) {
+func (s *Store) convertCommitInfo(info []git.CommitInfo, repoPath string) ([]git.Commit, []git.RefInfo) {
 	commits := make([]git.Commit, len(info))
 	var refs []git.RefInfo
 
 	for i, c := range info {
-		commits[i] = convertCommit(c)
+		c.Index = i
 		for _, r := range c.Ref {
 			if !strings.Contains(r.FullName, "HEAD") {
 				refs = append(refs, r)
 			}
 		}
+		commits[i] = convertCommit(c)
 	}
-	return commits, refs
+	return commits, s.finishRefInfoProperties(refs, repoPath)
 }
 
 func convertCommit(info git.CommitInfo) git.Commit {
-	refIds := make([]string, len(info.Ref))
-	for i, ref := range info.Ref {
-		refIds[i] = ref.Id
-	}
 	return git.Commit{
 		Author:     info.Author,
 		Email:      info.Email,
@@ -72,14 +103,14 @@ func convertCommit(info git.CommitInfo) git.Commit {
 		IsMerge:    info.IsMerge,
 		Message:    info.Message,
 		StashId:    info.StashId,
-		Ref:        refIds,
+		Ref:        shared.Map(info.Ref, func(ref git.RefInfo) string { return ref.Id }),
 		Filtered:   info.Filtered,
 		NumSkipped: info.NumSkipped,
 	}
 }
 
-func finishRefInfoProperties(refs []git.RefInfo, repoPath string) {
-	c, ok := GetConfig(repoPath)
+func (s *Store) finishRefInfoProperties(refs []git.RefInfo, repoPath string) []git.RefInfo {
+	c, ok := s.GetConfig(repoPath)
 	if !ok {
 		panic("Expected " + repoPath + " config to be already loaded")
 	}
@@ -90,6 +121,8 @@ func finishRefInfoProperties(refs []git.RefInfo, repoPath string) {
 		}
 		ref.SiblingId = getSiblingIdForRef(ref, refs)
 	}
+
+	return refs
 }
 
 func getSiblingIdForRef(ref git.RefInfo, refs []git.RefInfo) string {

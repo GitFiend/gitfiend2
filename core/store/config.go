@@ -13,8 +13,8 @@ type GitConfig struct {
 	Submodules map[string]string
 }
 
-func LoadConfigFromDisk(repoPath string) (GitConfig, error) {
-	repo, ok := GetRepoPath(repoPath)
+func (s *Store) LoadConfigFromDisk(repoPath string) (GitConfig, error) {
+	repo, ok := s.GetRepoPath(repoPath)
 	if !ok {
 		return GitConfig{}, fmt.Errorf("couldn't load config for %s", repoPath)
 	}

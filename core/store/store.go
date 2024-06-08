@@ -4,33 +4,44 @@ import (
 	"slices"
 )
 
-var repoPaths []RepoPath
-var commitsAndRefs CommitsAndRefs
-var configs = map[string]GitConfig{}
-
-func SetRepoPaths(repos []RepoPath) {
-	repoPaths = repos
+type Store struct {
+	repoPaths      []RepoPath
+	commitsAndRefs CommitsAndRefs
+	configs        map[string]GitConfig
 }
 
-func GetRepoPath(repoPath string) (RepoPath, bool) {
-	i := slices.IndexFunc(repoPaths, func(p RepoPath) bool {
+func New() Store {
+	return Store{
+		repoPaths:      []RepoPath{},
+		commitsAndRefs: CommitsAndRefs{},
+		configs:        map[string]GitConfig{},
+	}
+}
+
+func (s *Store) SetRepoPaths(repos []RepoPath) {
+	s.repoPaths = repos
+}
+
+func (s *Store) GetRepoPath(repoPath string) (RepoPath, bool) {
+	i := slices.IndexFunc(s.repoPaths, func(p RepoPath) bool {
 		return p.Path == repoPath
 	})
 
 	if i >= 0 {
-		return repoPaths[i], true
+		return s.repoPaths[i], true
 	}
 	return RepoPath{}, false
 }
 
-func SetConfig(repoPath string, c GitConfig) {
-	configs[repoPath] = c
+func (s *Store) SetConfig(repoPath string, c GitConfig) {
+	s.configs[repoPath] = c
 }
-func GetConfig(repoPath string) (GitConfig, bool) {
-	c, ok := configs[repoPath]
+
+func (s *Store) GetConfig(repoPath string) (GitConfig, bool) {
+	c, ok := s.configs[repoPath]
 	return c, ok
 }
 
-func SetCommitsAndRefs(c CommitsAndRefs) {
-	commitsAndRefs = c
+func (s *Store) SetCommitsAndRefs(c CommitsAndRefs) {
+	s.commitsAndRefs = c
 }

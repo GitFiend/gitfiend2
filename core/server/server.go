@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"gitfiend2/core/store"
 	"io"
 	"net"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 
 // const port = ":0"
 const port = ":29998"
+
+var Store = store.New()
 
 // StartServer
 // This is a server for testing against the current Rust implementation.
