@@ -1,21 +1,46 @@
 package git
 
-import "fmt"
+import (
+	"fmt"
+	"gitfiend2/core/parser"
+)
 
 func LoadPatches(repoPath string, commits []Commit) {
 	//
 }
 
 // Normal refers to the type of commit. Commits that aren't stashes or merges.
-func loadNormalPatches(repoPath string, commits []Commit, numCommits int) {
+func loadNormalPatches(repoPath string, commits []Commit, numCommits int) (
+	map[string][]patchData,
+	bool,
+) {
 	if len(commits) > 20 {
-		//
+		return loadAllPatchesForNormalCommits(repoPath, numCommits)
 	} else {
-		//
+		args := []string{"show"}
+		for _, c := range commits {
+			args = append(args, c.Id)
+		}
+		args = append(args, "--name-status", "--pretty=format:%H", "-z")
+
+		res, err := RunGit(
+			RunOpts{
+				RepoPath: repoPath,
+				Args:     args,
+			},
+		)
+		if err != nil {
+			return nil, false
+		}
+
+		return parser.ParseAll(pManyPatchesWithCommitIds, res.Stdout)
 	}
 }
 
-func loadAllPatchesForNormalCommits(repoPath string, numCommits int) {
+func loadAllPatchesForNormalCommits(repoPath string, numCommits int) (
+	map[string][]patchData,
+	bool,
+) {
 	res, err := RunGit(
 		RunOpts{
 			Args: []string{
@@ -35,9 +60,8 @@ func loadAllPatchesForNormalCommits(repoPath string, numCommits int) {
 	)
 
 	if err != nil {
-		return // TODO
+		return nil, false
 	}
 
-	// TODO: Parse patches
-	fmt.Println(res)
+	return parser.ParseAll(pManyPatchesWithCommitIds, res.Stdout)
 }

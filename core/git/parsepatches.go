@@ -5,7 +5,16 @@ import (
 	p "gitfiend2/core/parser"
 )
 
-var pManyPatchesWithCommitIds = p.Many(pPatchesWithCommitId)
+var pManyPatchesWithCommitIds = p.Map(p.Many(pPatchesWithCommitId), patchesToMap)
+
+func patchesToMap(res []p.And3Result[string, []patchData, string]) map[string][]patchData {
+	m := map[string][]patchData{}
+
+	for _, r := range res {
+		m[r.R1] = r.R2
+	}
+	return m
+}
 
 var pPatchesWithCommitId = p.And3(
 	p.UntilParser(p.And2(p.Rune(','), p.Ws)),
