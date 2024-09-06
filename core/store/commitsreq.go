@@ -59,9 +59,11 @@ func (s *Store) loadCommitsUnfiltered(
 		commitInfo = append(commitInfo, stashes...)
 
 		// TODO: Check this.
-		slices.SortFunc(commitInfo, func(a, b git.CommitInfo) int {
-			return cmp.Compare(a.StashId, b.StashId)
-		})
+		slices.SortFunc(
+			commitInfo, func(a, b git.CommitInfo) int {
+				return cmp.Compare(a.StashId, b.StashId)
+			},
+		)
 	}
 
 	commits, refs := s.convertCommitInfo(commitInfo, repoPath)
@@ -76,7 +78,10 @@ func (s *Store) loadCommitsUnfiltered(
 	return result
 }
 
-func (s *Store) convertCommitInfo(info []git.CommitInfo, repoPath string) ([]git.Commit, []git.RefInfo) {
+func (s *Store) convertCommitInfo(info []git.CommitInfo, repoPath string) (
+	[]git.Commit,
+	[]git.RefInfo,
+) {
 	commits := make([]git.Commit, len(info))
 	var refs []git.RefInfo
 
@@ -127,18 +132,22 @@ func (s *Store) finishRefInfoProperties(refs []git.RefInfo, repoPath string) []g
 
 func getSiblingIdForRef(ref git.RefInfo, refs []git.RefInfo) string {
 	if ref.Location == git.Remote {
-		local, ok := shared.Find(refs, func(r git.RefInfo) bool {
-			return r.Location == git.Local && r.ShortName == ref.ShortName
-		})
+		local, ok := shared.Find(
+			refs, func(r git.RefInfo) bool {
+				return r.Location == git.Local && r.ShortName == ref.ShortName
+			},
+		)
 		if ok {
 			return local.Id
 		}
 	}
-	remote, ok := shared.Find(refs, func(r git.RefInfo) bool {
-		return r.Location == git.Remote &&
-			r.ShortName == ref.ShortName &&
-			r.RemoteName == ref.RemoteName
-	})
+	remote, ok := shared.Find(
+		refs, func(r git.RefInfo) bool {
+			return r.Location == git.Remote &&
+				r.ShortName == ref.ShortName &&
+				r.RemoteName == ref.RemoteName
+		},
+	)
 	if ok {
 		return remote.Id
 	}

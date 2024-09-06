@@ -14,7 +14,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
-//go:embed all:frontend/dist
+// /go:embed all:frontend/dist
 var assets embed.FS
 
 //go:generate go run core/parser/genand/main.go
@@ -46,19 +46,21 @@ func runWails() {
 	app := NewApp()
 
 	// Create application with options
-	err := wails.Run(&options.App{
-		Title:  "gitfiend2",
-		Width:  1024,
-		Height: 768,
-		AssetServer: &assetserver.Options{
-			Assets: assets,
+	err := wails.Run(
+		&options.App{
+			Title:  "gitfiend2",
+			Width:  1024,
+			Height: 768,
+			AssetServer: &assetserver.Options{
+				Assets: assets,
+			},
+			BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+			OnStartup:        app.startup,
+			Bind: []any{
+				app,
+			},
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        app.startup,
-		Bind: []any{
-			app,
-		},
-	})
+	)
 
 	if err != nil {
 		println("Error:", err.Error())

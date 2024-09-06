@@ -22,13 +22,17 @@ const SepRune = ';'
  */
 const prettyFormatted = `--pretty=format:%an; %ae; %ad; %H; %P; %B` + End + `; %d`
 
-var pGroup = TakeRuneWhile(func(r rune) bool {
-	return r != SepRune
-})
+var pGroup = TakeRuneWhile(
+	func(r rune) bool {
+		return r != SepRune
+	},
+)
 
-var pSep = Map(And3(Ws, Rune(SepRune), Ws), func(result And3Result[string, rune, string]) rune {
-	return SepRune
-})
+var pSep = Map(
+	And3(Ws, Rune(SepRune), Ws), func(result And3Result[string, rune, string]) rune {
+		return SepRune
+	},
+)
 
 var pEmail = Or(pGroup, Ws)
 
@@ -78,7 +82,7 @@ var PCommitRow = Map(
 			rune,
 			string,
 			rune,
-			[]RefInfoPart,
+			[]refInfoPart,
 			string,
 		],
 	) CommitInfo {

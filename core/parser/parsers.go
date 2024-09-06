@@ -77,6 +77,16 @@ func OptionalWhiteSpace[T any]() Parser[T] {
 	}
 }
 
+func Optional[T any](parser Parser[T]) Parser[T] {
+	return func(in *Input) (T, bool) {
+		res, ok := parser(in)
+		if ok {
+			return res, true
+		}
+		return *new(T), true
+	}
+}
+
 var Ws = OptionalWhiteSpace[string]()
 
 func IsWhiteSpace(val rune) bool {
@@ -214,5 +224,17 @@ func TakeRuneWhile(f func(r rune) bool) Parser[string] {
 			return "", false
 		}
 		return string(in.Code[startPos:in.Position]), true
+	}
+}
+
+func ConditionalRune(f func(r rune) bool) Parser[rune] {
+	return func(i *Input) (rune, bool) {
+		r := i.NextRune()
+
+		if f(r) {
+			i.Advance()
+			return r, true
+		}
+		return *new(rune), false
 	}
 }

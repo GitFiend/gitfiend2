@@ -38,6 +38,20 @@ func TestStringLiteralParser(t *testing.T) {
 	assert.Equal(t, "abc abc", res)
 }
 
+func TestFloatParser(t *testing.T) {
+	res, ok := ParseAll(Float, "12.12")
+	assert.True(t, ok)
+	assert.Equal(t, "12.12", res)
+
+	res, ok = ParsePart(Float, "12.44A")
+	assert.True(t, ok)
+	assert.Equal(t, "12.44", res)
+
+	res, ok = ParsePart(Float, "-12")
+	assert.True(t, ok)
+	assert.Equal(t, "-12", res)
+}
+
 //func TestStringLiteralParserWithEscape(t *testing.T) {
 //	res, ok := ParseAll(StringLiteral, `"abc \"abc"`)
 //

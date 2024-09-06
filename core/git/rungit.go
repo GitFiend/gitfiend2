@@ -6,8 +6,10 @@ import (
 )
 
 type RunOpts struct {
-	Args      []string
-	RepoPath  string
+	Args     []string
+	RepoPath string
+
+	// TODO
 	Timeout   bool
 	ShowError bool
 }

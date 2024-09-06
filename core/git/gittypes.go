@@ -1,16 +1,5 @@
 package git
 
-type RefInfoPart struct {
-	Id         string
-	Location   RefLocation
-	FullName   string
-	ShortName  string
-	RemoteName string
-	SiblingId  string
-	RefType    RefType
-	Head       bool
-}
-
 type RefType int
 
 const (
@@ -26,6 +15,8 @@ const (
 	Remote
 )
 
+// CommitInfo
+// TODO: Should probably be private
 type CommitInfo struct {
 	Author    string
 	Email     string
@@ -62,6 +53,7 @@ type Commit struct {
 	NumSkipped int  `json:"numSkipped"`
 }
 
+// DateResult
 // TODO: Adjustment doesn't seem to be used in the frontend.
 type DateResult struct {
 	Ms         int `json:"ms"`
@@ -79,4 +71,27 @@ type RefInfo struct {
 	Head       bool        `json:"head"`
 	CommitId   string      `json:"commitId"`
 	Time       int         `json:"time"` // in milliseconds (ms)
+}
+
+type PatchType rune
+
+const (
+	A PatchType = 'A'
+	C           = 'C'
+	B           = 'B'
+	D           = 'D'
+	M           = 'M'
+	R           = 'R'
+	T           = 'T'
+	U           = 'U'
+	X           = 'X'
+)
+
+type Patch struct {
+	CommitId  string    `json:"commitId"`
+	OldFile   string    `json:"oldFile"`
+	NewFile   string    `json:"newFile"`
+	PatchType PatchType `json:"patchType"`
+	Id        string    `json:"id"`
+	IsImage   bool      `json:"isImage"`
 }
