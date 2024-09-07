@@ -34,7 +34,7 @@ func (s *Store) loadCommitsUnfiltered(
 	skipStashes bool,
 ) CommitsAndRefs {
 	if cacheOnly {
-		return s.commitsAndRefs
+		return s.GetCommitsAndRefs(repoPath)
 	}
 
 	var commitInfo []CommitInfo
@@ -73,7 +73,7 @@ func (s *Store) loadCommitsUnfiltered(
 		Refs:    refs,
 	}
 
-	s.SetCommitsAndRefs(result)
+	s.SetCommitsAndRefs(repoPath, result)
 	return result
 }
 
@@ -114,10 +114,7 @@ func convertCommit(info CommitInfo) Commit {
 }
 
 func (s *Store) finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
-	c, ok := s.GetConfig(repoPath)
-	if !ok {
-		panic("Expected " + repoPath + " config to be already loaded")
-	}
+	c := s.GetConfig(repoPath)
 
 	for _, ref := range refs {
 		if ref.RemoteName == "" {

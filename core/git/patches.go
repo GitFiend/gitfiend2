@@ -3,10 +3,20 @@ package git
 import (
 	"fmt"
 	"gitfiend2/core/parser"
+	"os"
 )
 
-func LoadPatches(repoPath string, commits []Commit) {
-	//
+func (s *Store) LoadPatches(repoPath string, commits []Commit) map[string][]Patch {
+	r := s.ensureRepo(repoPath)
+
+	if len(r.patches) > 0 {
+		return r.patches
+	}
+
+	// TODO
+	os.UserCacheDir()
+	// TODO
+	return nil
 }
 
 // Normal refers to the type of commit. Commits that aren't stashes or merges.
