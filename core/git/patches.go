@@ -1,22 +1,67 @@
 package git
 
 import (
+	"encoding/json"
 	"fmt"
 	"gitfiend2/core/parser"
 	"os"
+	"path"
+	"strings"
 )
 
 func (s *Store) LoadPatches(repoPath string, commits []Commit) map[string][]Patch {
-	r := s.ensureRepo(repoPath)
-
-	if len(r.patches) > 0 {
-		return r.patches
+	patches, ok := s.loadPatchesCache(repoPath)
+	if ok {
+		return patches
 	}
 
 	// TODO
-	os.UserCacheDir()
-	// TODO
 	return nil
+}
+
+func (s *Store) loadPatchesCache(repoPath string) (map[string][]Patch, bool) {
+	r := s.ensureRepo(repoPath)
+	if len(r.patches) > 0 {
+		return r.patches, true
+	}
+
+	file, ok := getCacheFile(repoPath)
+	if !ok {
+		return nil, false
+	}
+
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		return nil, false
+	}
+
+	var patches map[string][]Patch
+	err = json.Unmarshal(bytes, &patches)
+	r.patches = patches
+
+	return patches, err == nil
+}
+
+func getCacheFile(repoPath string) (string, bool) {
+	dir, err := os.UserCacheDir()
+	if err != nil {
+		return "", false
+	}
+
+	appDir := path.Join(dir, "gitfiend")
+	err = os.MkdirAll(appDir, os.ModeDir)
+	if err != nil {
+		return "", false
+	}
+
+	return path.Join(appDir, genCacheFileName(repoPath)), true
+}
+
+func genCacheFileName(repoPath string) string {
+	r := strings.NewReplacer("\\", "", ":", "", "/", "")
+	fileName := r.Replace(repoPath)
+
+	return fileName + ".json"
 }
 
 // Normal refers to the type of commit. Commits that aren't stashes or merges.
