@@ -3,17 +3,57 @@ package git
 import (
 	"fmt"
 	p "gitfiend2/core/parser"
+	"slices"
+	"strings"
 )
 
 var pManyPatchesWithCommitIds = p.Map(p.Many(pPatchesWithCommitId), patchesToMap)
 
-func patchesToMap(res []p.And3Result[string, []patchData, string]) map[string][]patchData {
-	m := map[string][]patchData{}
+func patchesToMap(res []p.And3Result[string, []patchData, string]) map[string][]Patch {
+	m := map[string][]Patch{}
 
 	for _, r := range res {
-		m[r.R1] = r.R2
+		commitId := r.R1
+		data := r.R2
+
+		var patches []Patch
+		for _, pd := range data {
+			patches = append(
+				patches, Patch{
+					CommitId:  commitId,
+					OldFile:   pd.oldFile,
+					NewFile:   pd.newFile,
+					PatchType: pd.patchType,
+					Id:        pd.id,
+					IsImage:   fileIsImage(pd.newFile),
+				},
+			)
+		}
+		m[commitId] = patches
 	}
 	return m
+}
+
+var imageExtensions = []string{
+	".apng",
+	".bmp",
+	".gif",
+	".ico",
+	".cur",
+	".jpg",
+	".jpeg",
+	".png",
+	".svg",
+	".webp",
+}
+
+func fileIsImage(filename string) bool {
+	name := strings.ToLower(filename)
+	return slices.ContainsFunc(
+		imageExtensions, func(ext string) bool {
+			return strings.Contains(name, ext)
+		},
+	)
 }
 
 var pPatchesWithCommitId = p.And3(

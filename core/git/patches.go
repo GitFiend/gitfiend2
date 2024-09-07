@@ -11,7 +11,7 @@ func LoadPatches(repoPath string, commits []Commit) {
 
 // Normal refers to the type of commit. Commits that aren't stashes or merges.
 func loadNormalPatches(repoPath string, commits []Commit, numCommits int) (
-	map[string][]patchData,
+	map[string][]Patch,
 	bool,
 ) {
 	if len(commits) > 20 {
@@ -38,7 +38,7 @@ func loadNormalPatches(repoPath string, commits []Commit, numCommits int) (
 }
 
 func loadAllPatchesForNormalCommits(repoPath string, numCommits int) (
-	map[string][]patchData,
+	map[string][]Patch,
 	bool,
 ) {
 	res, err := RunGit(
