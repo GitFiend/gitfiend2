@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitfiend2/core/store"
+	"gitfiend2/core/git"
 	"io"
 	"net"
 	"net/http"
@@ -14,29 +14,31 @@ import (
 // const port = ":0"
 const port = ":29998"
 
-var Store = store.New()
+var Store = git.NewStore()
 
 // StartServer
 // This is a server for testing against the current Rust implementation.
 func StartServer() {
-	http.HandleFunc("/f/{funcName}", func(writer http.ResponseWriter, req *http.Request) {
-		funcName := req.PathValue("funcName")
+	http.HandleFunc(
+		"/f/{funcName}", func(writer http.ResponseWriter, req *http.Request) {
+			funcName := req.PathValue("funcName")
 
-		body, err := io.ReadAll(req.Body)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		result, ok := handleFuncRequest(funcName, body)
-
-		if ok {
-			_, err := writer.Write(result)
-
+			body, err := io.ReadAll(req.Body)
 			if err != nil {
 				fmt.Println(err)
 			}
-		}
-	})
+
+			result, ok := handleFuncRequest(funcName, body)
+
+			if ok {
+				_, err := writer.Write(result)
+
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+		},
+	)
 
 	listener, err := net.Listen("tcp", port)
 	if err != nil {

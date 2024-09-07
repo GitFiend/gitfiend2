@@ -1,4 +1,4 @@
-package store
+package git
 
 type RepoStatus struct {
 }

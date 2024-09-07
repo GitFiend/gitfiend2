@@ -1,24 +1,23 @@
-package store
+package git
 
 import (
 	"cmp"
-	"gitfiend2/core/git"
 	"gitfiend2/core/shared"
 	"slices"
 	"strings"
 )
 
 type ReqCommitsOptions struct {
-	RepoPath    string             `json:"repoPath"`
-	NumCommits  int                `json:"numCommits"`
-	Filters     []git.CommitFilter `json:"filters"`
-	Fast        bool               `json:"fast"`
-	SkipStashes bool               `json:"skipStashes"`
+	RepoPath    string         `json:"repoPath"`
+	NumCommits  int            `json:"numCommits"`
+	Filters     []CommitFilter `json:"filters"`
+	Fast        bool           `json:"fast"`
+	SkipStashes bool           `json:"skipStashes"`
 }
 
 type CommitsAndRefs struct {
-	Commits []git.Commit  `json:"commits"`
-	Refs    []git.RefInfo `json:"refs"`
+	Commits []Commit  `json:"commits"`
+	Refs    []RefInfo `json:"refs"`
 }
 
 func (s *Store) LoadCommitsAndRefs(o ReqCommitsOptions) CommitsAndRefs {
@@ -38,21 +37,21 @@ func (s *Store) loadCommitsUnfiltered(
 		return s.commitsAndRefs
 	}
 
-	var commitInfo []git.CommitInfo
+	var commitInfo []CommitInfo
 
 	if skipStashes {
-		commitInfo = git.LoadCommits(repoPath, numCommits)
+		commitInfo = LoadCommits(repoPath, numCommits)
 	} else {
-		var stashes []git.CommitInfo
+		var stashes []CommitInfo
 
-		reqCommits := make(chan []git.CommitInfo)
-		reqStashes := make(chan []git.CommitInfo)
+		reqCommits := make(chan []CommitInfo)
+		reqStashes := make(chan []CommitInfo)
 
 		go func() {
-			reqCommits <- git.LoadCommits(repoPath, numCommits)
+			reqCommits <- LoadCommits(repoPath, numCommits)
 		}()
 		go func() {
-			reqStashes <- git.LoadStashes(repoPath)
+			reqStashes <- LoadStashes(repoPath)
 		}()
 
 		commitInfo, stashes = <-reqCommits, <-reqStashes
@@ -60,7 +59,7 @@ func (s *Store) loadCommitsUnfiltered(
 
 		// TODO: Check this.
 		slices.SortFunc(
-			commitInfo, func(a, b git.CommitInfo) int {
+			commitInfo, func(a, b CommitInfo) int {
 				return cmp.Compare(a.StashId, b.StashId)
 			},
 		)
@@ -78,12 +77,12 @@ func (s *Store) loadCommitsUnfiltered(
 	return result
 }
 
-func (s *Store) convertCommitInfo(info []git.CommitInfo, repoPath string) (
-	[]git.Commit,
-	[]git.RefInfo,
+func (s *Store) convertCommitInfo(info []CommitInfo, repoPath string) (
+	[]Commit,
+	[]RefInfo,
 ) {
-	commits := make([]git.Commit, len(info))
-	var refs []git.RefInfo
+	commits := make([]Commit, len(info))
+	var refs []RefInfo
 
 	for i, c := range info {
 		c.Index = i
@@ -97,8 +96,8 @@ func (s *Store) convertCommitInfo(info []git.CommitInfo, repoPath string) (
 	return commits, s.finishRefInfoProperties(refs, repoPath)
 }
 
-func convertCommit(info git.CommitInfo) git.Commit {
-	return git.Commit{
+func convertCommit(info CommitInfo) Commit {
+	return Commit{
 		Author:     info.Author,
 		Email:      info.Email,
 		Date:       info.Date,
@@ -108,13 +107,13 @@ func convertCommit(info git.CommitInfo) git.Commit {
 		IsMerge:    info.IsMerge,
 		Message:    info.Message,
 		StashId:    info.StashId,
-		Ref:        shared.Map(info.Ref, func(ref git.RefInfo) string { return ref.Id }),
+		Ref:        shared.Map(info.Ref, func(ref RefInfo) string { return ref.Id }),
 		Filtered:   info.Filtered,
 		NumSkipped: info.NumSkipped,
 	}
 }
 
-func (s *Store) finishRefInfoProperties(refs []git.RefInfo, repoPath string) []git.RefInfo {
+func (s *Store) finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
 	c, ok := s.GetConfig(repoPath)
 	if !ok {
 		panic("Expected " + repoPath + " config to be already loaded")
@@ -130,11 +129,11 @@ func (s *Store) finishRefInfoProperties(refs []git.RefInfo, repoPath string) []g
 	return refs
 }
 
-func getSiblingIdForRef(ref git.RefInfo, refs []git.RefInfo) string {
-	if ref.Location == git.Remote {
+func getSiblingIdForRef(ref RefInfo, refs []RefInfo) string {
+	if ref.Location == Remote {
 		local, ok := shared.Find(
-			refs, func(r git.RefInfo) bool {
-				return r.Location == git.Local && r.ShortName == ref.ShortName
+			refs, func(r RefInfo) bool {
+				return r.Location == Local && r.ShortName == ref.ShortName
 			},
 		)
 		if ok {
@@ -142,8 +141,8 @@ func getSiblingIdForRef(ref git.RefInfo, refs []git.RefInfo) string {
 		}
 	}
 	remote, ok := shared.Find(
-		refs, func(r git.RefInfo) bool {
-			return r.Location == git.Remote &&
+		refs, func(r RefInfo) bool {
+			return r.Location == Remote &&
 				r.ShortName == ref.ShortName &&
 				r.RemoteName == ref.RemoteName
 		},

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gitfiend2/core/git"
 	"gitfiend2/core/shared"
-	"gitfiend2/core/store"
 	"os"
 	"path"
 )
@@ -53,15 +52,17 @@ func reqGitVersion(_ ReqOptions) git.VersionInfo {
 	return git.Version
 }
 
-func reqScanWorkspace(options store.ScanOptions) []string {
+func reqScanWorkspace(options git.ScanOptions) []string {
 	res := Store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
 
-	return shared.Map(res, func(r store.RepoPath) string {
-		return r.Path
-	})
+	return shared.Map(
+		res, func(r git.RepoPath) string {
+			return r.Path
+		},
+	)
 }
 
-func reqRepoStatus(o ReqOptions) store.RepoStatus {
+func reqRepoStatus(o ReqOptions) git.RepoStatus {
 	return Store.LoadRepoStatus(o.RepoPath)
 }
 
@@ -77,6 +78,6 @@ func isRebaseInProgress(options ReqOptions) bool {
 	return false
 }
 
-func loadCommitsAndRefs(o store.ReqCommitsOptions) store.CommitsAndRefs {
+func loadCommitsAndRefs(o git.ReqCommitsOptions) git.CommitsAndRefs {
 	return Store.LoadCommitsAndRefs(o)
 }

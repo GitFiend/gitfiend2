@@ -1,7 +1,6 @@
-package store
+package git
 
 import (
-	"gitfiend2/core/git"
 	"os"
 	"path"
 	"slices"
@@ -95,15 +94,15 @@ func lookForSubmodules(dir string) ([]RepoPath, error) {
 
 	var paths []RepoPath
 
-	rows, ok := git.ParseConfig(string(text))
+	rows, ok := ParseConfig(string(text))
 	if ok {
 		for _, row := range rows {
 			switch r := row.(type) {
-			case git.Section:
+			case Section:
 				if r.Heading[0] == "submodule" {
 					for _, sub := range r.Rows {
 						switch data := sub.(type) {
-						case git.DataRow:
+						case DataRow:
 							if data[0] == "path" {
 								repoPath, ok := getGitRepo(path.Join(dir, data[1]))
 								if ok {
