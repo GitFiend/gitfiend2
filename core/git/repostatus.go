@@ -1,14 +1,11 @@
 package git
 
 type RepoStatus struct {
+	Config Config `json:"config"`
 }
 
 func (s *Store) LoadRepoStatus(repoPath string) RepoStatus {
-	c, err := s.LoadConfigFromDisk(repoPath)
+	config := s.LoadFullConfig(repoPath)
 
-	if err == nil {
-		s.SetConfig(repoPath, c)
-	}
-
-	return RepoStatus{}
+	return RepoStatus{Config: config}
 }

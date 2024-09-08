@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"gitfiend2/core/git"
 	"gitfiend2/core/shared"
 	"os"
@@ -27,7 +26,7 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 	}
 
 	if ok {
-		fmt.Println("Func Result: ", res)
+		//fmt.Println("Func Result: ", res)
 		resBytes, err := json.Marshal(res)
 
 		if err == nil {

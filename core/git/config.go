@@ -7,12 +7,22 @@ import (
 )
 
 type Config struct {
-	Entries    map[string]string
-	Remotes    map[string]string
-	Submodules map[string]string
+	Entries    map[string]string `json:"entries"`
+	Remotes    map[string]string `json:"remotes"`
+	Submodules map[string]string `json:"submodules"`
 }
 
-func (s *Store) LoadConfigFromDisk(repoPath string) (Config, error) {
+func (s *Store) LoadFullConfig(repoPath string) Config {
+	c, err := s.loadConfigFromDisk(repoPath)
+	if err != nil {
+		panic(err)
+	}
+
+	s.SetConfig(repoPath, c)
+	return c
+}
+
+func (s *Store) loadConfigFromDisk(repoPath string) (Config, error) {
 	repo, ok := s.GetRepoPath(repoPath)
 	if !ok {
 		return Config{}, fmt.Errorf("couldn't load config for %s", repoPath)
