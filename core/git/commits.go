@@ -11,6 +11,8 @@ import (
 const End = "4a41380f-a4e8-4251-9ca2-bf55186ed32a"
 const SepRune = ';'
 
+const commit0Id = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
 /**
  * %an author name
  * %ae author email

@@ -10,12 +10,111 @@ import (
 )
 
 func (s *Store) LoadPatches(repoPath string, commits []Commit) map[string][]Patch {
+	var commitsWithoutPatches []Commit
+	var stashesOrMergesWithoutPatches []Commit
+	var newPatches map[string][]Patch
+
 	patches, ok := s.loadPatchesCache(repoPath)
 	if ok {
+		for _, c := range commits {
+			if p, ok := patches[c.Id]; ok {
+				newPatches[c.Id] = p
+			} else if c.StashId == "" && !c.IsMerge {
+				commitsWithoutPatches = append(commitsWithoutPatches, c)
+			} else {
+				stashesOrMergesWithoutPatches = append(stashesOrMergesWithoutPatches, c)
+			}
+		}
+	} else {
+		for _, c := range commits {
+			if c.StashId == "" && !c.IsMerge {
+				commitsWithoutPatches = append(commitsWithoutPatches, c)
+			} else {
+				stashesOrMergesWithoutPatches = append(stashesOrMergesWithoutPatches, c)
+			}
+		}
+	}
+
+	if len(commitsWithoutPatches) == 0 && len(stashesOrMergesWithoutPatches) == 0 {
 		return patches
 	}
 
-	// TODO
+	if len(commitsWithoutPatches) > 0 {
+		p, ok := loadNormalPatches(repoPath, commitsWithoutPatches, len(commits))
+		if ok {
+			for id, patch := range p {
+				patches[id] = patch
+			}
+		}
+	}
+
+	for _, c := range stashesOrMergesWithoutPatches {
+		p := loadPatchesForCommit(repoPath, c)
+		newPatches[c.Id] = p
+	}
+	writePatchesCache(repoPath, newPatches)
+	return newPatches
+}
+
+func writePatchesCache(repoPath string, newPatches map[string][]Patch) {
+	file, ok := getCacheFile(repoPath)
+	if !ok {
+		return
+	}
+
+	data, err := json.Marshal(newPatches)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.WriteFile(file, data, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func loadPatchesForCommit(repoPath string, commit Commit) []Patch {
+	var args []string
+
+	if commit.IsMerge {
+		args = []string{
+			"diff",
+			"--name-status",
+			"-z",
+			"--no-color",
+			fmt.Sprintf("%s...%s", commit.ParentIds[0], commit.ParentIds[1]),
+		}
+	} else if commit.StashId != "" {
+		args = []string{
+			"diff",
+			fmt.Sprintf("%s..%s", commit.ParentIds[0], commit.Id),
+			"--no-color",
+			"--name-status",
+			"-z",
+		}
+	} else {
+		args = []string{
+			"diff", fmt.Sprintf("%s..%s", commit0Id, commit.Id),
+			"--no-color",
+			"--name-status",
+			"-z",
+		}
+	}
+
+	res, err := RunGit(
+		RunOpts{
+			RepoPath: repoPath,
+			Args:     args,
+		},
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	patches, ok := parser.ParseAll(pPatches, res.Stdout)
+	if ok {
+		return patchDataToPatches(commit.Id, patches)
+	}
 	return nil
 }
 

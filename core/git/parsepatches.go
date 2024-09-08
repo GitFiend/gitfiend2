@@ -15,23 +15,26 @@ func patchesToMap(res []p.And3Result[string, []patchData, string]) map[string][]
 	for _, r := range res {
 		commitId := r.R1
 		data := r.R2
-
-		var patches []Patch
-		for _, pd := range data {
-			patches = append(
-				patches, Patch{
-					CommitId:  commitId,
-					OldFile:   pd.oldFile,
-					NewFile:   pd.newFile,
-					PatchType: pd.patchType,
-					Id:        pd.id,
-					IsImage:   fileIsImage(pd.newFile),
-				},
-			)
-		}
-		m[commitId] = patches
+		m[commitId] = patchDataToPatches(commitId, data)
 	}
 	return m
+}
+
+func patchDataToPatches(commitId string, data []patchData) []Patch {
+	var patches []Patch
+	for _, pd := range data {
+		patches = append(
+			patches, Patch{
+				CommitId:  commitId,
+				OldFile:   pd.oldFile,
+				NewFile:   pd.newFile,
+				PatchType: pd.patchType,
+				Id:        pd.id,
+				IsImage:   fileIsImage(pd.newFile),
+			},
+		)
+	}
+	return patches
 }
 
 var imageExtensions = []string{
