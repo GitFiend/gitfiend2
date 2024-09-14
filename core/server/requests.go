@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"gitfiend2/core/git"
-	"gitfiend2/core/shared"
 	"os"
 	"path"
 )
@@ -16,7 +15,7 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 	case "git_version":
 		res, ok = callFunc(reqGitVersion, reqData)
 	case "scan_workspace":
-		res, ok = callFunc(reqScanWorkspace, reqData)
+		res, ok = callFunc(git.ReqScanWorkspace, reqData)
 	case "is_rebase_in_progress":
 		res, ok = callFunc(isRebaseInProgress, reqData)
 	case "load_repo_status":
@@ -51,15 +50,15 @@ func reqGitVersion(_ ReqOptions) git.VersionInfo {
 	return git.Version
 }
 
-func reqScanWorkspace(options git.ScanOptions) []string {
-	res := Store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
-
-	return shared.Map(
-		res, func(r git.RepoPath) string {
-			return r.Path
-		},
-	)
-}
+//func reqScanWorkspace(options git.ScanOptions) []string {
+//	res := Store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
+//
+//	return shared.Map(
+//		res, func(r git.RepoPath) string {
+//			return r.Path
+//		},
+//	)
+//}
 
 func reqRepoStatus(o ReqOptions) git.RepoStatus {
 	return Store.LoadRepoStatus(o.RepoPath)

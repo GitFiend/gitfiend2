@@ -14,6 +14,7 @@ import (
 // const port = ":0"
 const port = ":29998"
 
+// TODO: Delete this. Caching is now internal to git package?
 var Store = git.NewStore()
 
 // StartServer
@@ -31,7 +32,7 @@ func StartServer() {
 			result, ok := handleFuncRequest(funcName, body)
 
 			if ok {
-				_, err := writer.Write(result)
+				_, err = writer.Write(result)
 
 				if err != nil {
 					fmt.Println(err)

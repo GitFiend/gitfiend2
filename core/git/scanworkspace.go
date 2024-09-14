@@ -1,6 +1,7 @@
 package git
 
 import (
+	"gitfiend2/core/shared"
 	"os"
 	"path"
 	"slices"
@@ -12,6 +13,16 @@ import (
 type ScanOptions struct {
 	RepoPath          string `json:"repoPath"`
 	WorkspacesEnabled bool   `json:"workspacesEnabled"`
+}
+
+func ReqScanWorkspace(options ScanOptions) []string {
+	res := store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
+
+	return shared.Map(
+		res, func(r RepoPath) string {
+			return r.Path
+		},
+	)
 }
 
 func (s *Store) ScanWorkspace(repoPath string, workspacesEnabled bool) []RepoPath {
