@@ -1,7 +1,6 @@
 package git
 
 import (
-	"fmt"
 	"gitfiend2/core/git/wippatchtype"
 	p "gitfiend2/core/parser"
 	"testing"
@@ -76,5 +75,106 @@ func TestPWipPatches(t *testing.T) {
 		"R  582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt\000 582160ee-5216-4dc6-bf74-1c1fce4978eb.txt\000DU folder/has a space/test2.js\000",
 	)
 	assert.True(t, ok)
-	fmt.Print(out)
+	assert.Equal(
+		t, []wipPatchInfo{
+			{
+				staged:   wippatchtype.R,
+				unStaged: wippatchtype.Empty,
+				oldFile:  "582160ee-5216-4dc6-bf74-1c1fce4978eb.txt",
+				newFile:  "582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt",
+			},
+			{
+				staged:   wippatchtype.D,
+				unStaged: wippatchtype.U,
+				oldFile:  "folder/has a space/test2.js",
+				newFile:  "folder/has a space/test2.js",
+			},
+		}, out,
+	)
+
+	out, ok = p.ParseAll(
+		pWipPatches,
+		"C  582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt\000 582160ee-5216-4dc6-bf74-1c1fce4978eb.txt\000DU folder/has a space/test2.js\000",
+	)
+	assert.True(t, ok)
+	assert.Equal(
+		t, []wipPatchInfo{
+			{
+				staged:   wippatchtype.C,
+				unStaged: wippatchtype.Empty,
+				oldFile:  "582160ee-5216-4dc6-bf74-1c1fce4978eb.txt",
+				newFile:  "582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt",
+			},
+			{
+				staged:   wippatchtype.D,
+				unStaged: wippatchtype.U,
+				oldFile:  "folder/has a space/test2.js",
+				newFile:  "folder/has a space/test2.js",
+			},
+		}, out,
+	)
+}
+
+func TestPWipPatches2(t *testing.T) {
+	out, ok := p.ParseAll(
+		pWipPatches,
+		"T  582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt\000DU folder/has a space/test2.js\000",
+	)
+	assert.True(t, ok)
+	assert.Equal(
+		t, []wipPatchInfo{
+			{
+				staged:   wippatchtype.T,
+				unStaged: wippatchtype.Empty,
+				oldFile:  "582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt",
+				newFile:  "582160ee-5216-4dc6-bf74-1c1fce4978eb2.txt",
+			},
+			{
+				staged:   wippatchtype.D,
+				unStaged: wippatchtype.U,
+				oldFile:  "folder/has a space/test2.js",
+				newFile:  "folder/has a space/test2.js",
+			},
+		}, out,
+	)
+}
+
+func TestPWipPatches3(t *testing.T) {
+	text := " M .DS_Store\000 D LabBook/.ztr-directory\000 M LabBook/2023-06-18_CRISPR23-code.md\000?? Icon\r\000?? LabBook/2023-06-26_TEST.md\000"
+	out, ok := p.ParseAll(pWipPatches, text)
+	assert.True(t, ok)
+	assert.Equal(
+		t, []wipPatchInfo{
+			{
+				staged:   wippatchtype.Empty,
+				unStaged: wippatchtype.M,
+				oldFile:  ".DS_Store",
+				newFile:  ".DS_Store",
+			},
+			{
+				staged:   wippatchtype.Empty,
+				unStaged: wippatchtype.D,
+				oldFile:  "LabBook/.ztr-directory",
+				newFile:  "LabBook/.ztr-directory",
+			},
+			{
+				staged:   wippatchtype.Empty,
+				unStaged: wippatchtype.M,
+				oldFile:  "LabBook/2023-06-18_CRISPR23-code.md",
+				newFile:  "LabBook/2023-06-18_CRISPR23-code.md",
+			},
+			{
+				staged:   wippatchtype.Question,
+				unStaged: wippatchtype.Question,
+				oldFile:  "Icon\r",
+				newFile:  "Icon\r",
+			},
+			{
+				staged:   wippatchtype.Question,
+				unStaged: wippatchtype.Question,
+				oldFile:  "LabBook/2023-06-26_TEST.md",
+				newFile:  "LabBook/2023-06-26_TEST.md",
+			},
+		}, out,
+	)
 }
