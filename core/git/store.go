@@ -23,6 +23,9 @@ func NewStore() Store {
 	}
 }
 
+// TODO: Use this instead of the server version.
+var store = NewStore()
+
 func (s *Store) SetRepoPaths(repos []RepoPath) {
 	s.repoPaths = repos
 }
