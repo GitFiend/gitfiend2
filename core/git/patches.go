@@ -10,9 +10,11 @@ import (
 )
 
 func (s *Store) LoadPatches(repoPath string, commits []Commit) map[string][]Patch {
-	var commitsWithoutPatches []Commit
-	var stashesOrMergesWithoutPatches []Commit
-	var newPatches map[string][]Patch
+	var (
+		commitsWithoutPatches         []Commit
+		stashesOrMergesWithoutPatches []Commit
+		newPatches                    = map[string][]Patch{}
+	)
 
 	patches, ok := s.loadPatchesCache(repoPath)
 	if ok {

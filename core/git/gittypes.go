@@ -1,5 +1,10 @@
 package git
 
+import (
+	"gitfiend2/core/git/patchtype"
+	"gitfiend2/core/git/wippatchtype"
+)
+
 type RefType int
 
 const (
@@ -73,25 +78,27 @@ type RefInfo struct {
 	Time       int         `json:"time"` // in milliseconds (ms)
 }
 
-type PatchType rune
-
-const (
-	A PatchType = 'A'
-	C           = 'C'
-	B           = 'B'
-	D           = 'D'
-	M           = 'M'
-	R           = 'R'
-	T           = 'T'
-	U           = 'U'
-	X           = 'X'
-)
-
 type Patch struct {
-	CommitId  string    `json:"commitId"`
-	OldFile   string    `json:"oldFile"`
-	NewFile   string    `json:"newFile"`
-	PatchType PatchType `json:"patchType"`
-	Id        string    `json:"id"`
-	IsImage   bool      `json:"isImage"`
+	CommitId  string         `json:"commitId"`
+	OldFile   string         `json:"oldFile"`
+	NewFile   string         `json:"newFile"`
+	PatchType patchtype.Type `json:"patchType"`
+	Id        string         `json:"id"`
+	IsImage   bool           `json:"isImage"`
+}
+
+type WipPatch struct {
+	OldFile      string            `json:"oldFile"`
+	NewFile      string            `json:"newFile"`
+	PatchType    wippatchtype.Type `json:"patchType"`
+	StagedType   wippatchtype.Type `json:"stagedType"`
+	UnstagedType wippatchtype.Type `json:"unstagedType"`
+	Conflicted   bool              `json:"conflicted"`
+	Id           string            `json:"id"`
+	IsImage      bool              `json:"isImage"`
+}
+
+type WipPatches struct {
+	Patches          []WipPatch `json:"patches"`
+	ConflictCommitId string     `json:"conflictCommitId"`
 }

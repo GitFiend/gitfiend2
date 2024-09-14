@@ -2,6 +2,7 @@ package git
 
 import (
 	"fmt"
+	"gitfiend2/core/git/patchtype"
 	p "gitfiend2/core/parser"
 	"slices"
 	"strings"
@@ -67,7 +68,7 @@ var pPatchesWithCommitId = p.And3(
 
 type patchData struct {
 	id, oldFile, newFile string
-	patchType            PatchType
+	patchType            patchtype.Type
 }
 
 var pPatches = p.Many(p.Or(pRenamePatch, pCopyPatch, pOtherPatch))
@@ -101,7 +102,7 @@ func makePatchData(
 ) patchData {
 	return patchData{
 		id:        fmt.Sprintf("%s-%c%s", res.R4, res.R1.R1, res.R1.R2),
-		patchType: PatchType(res.R1.R1),
+		patchType: patchtype.Type(res.R1.R1),
 		oldFile:   res.R3,
 		newFile:   res.R4,
 	}
@@ -117,8 +118,8 @@ var pStatus = p.Map(
 		p.Rune('T'),
 		p.Rune('U'),
 		p.Rune('X'),
-	), func(res rune) PatchType {
-		return PatchType(res)
+	), func(res rune) patchtype.Type {
+		return patchtype.Type(res)
 	},
 )
 
@@ -127,7 +128,7 @@ var pOtherPatch = p.Map(
 	makeFromOther,
 )
 
-func makeFromOther(res p.And3Result[PatchType, string, string]) patchData {
+func makeFromOther(res p.And3Result[patchtype.Type, string, string]) patchData {
 	return patchData{
 		id:        fmt.Sprintf("%s-%c", res.R3, res.R1),
 		patchType: res.R1,
