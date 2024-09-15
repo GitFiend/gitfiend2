@@ -4,7 +4,7 @@ import (
 	"slices"
 )
 
-type Store struct {
+type Cache struct {
 	repoPaths []RepoPath
 	repos     map[string]*repo
 }
@@ -16,21 +16,17 @@ type repo struct {
 	patches map[string][]Patch
 }
 
-func NewStore() Store {
-	return Store{
-		repoPaths: []RepoPath{},
-		repos:     map[string]*repo{},
-	}
+// TODO: Use this instead of the server version.
+var cache = Cache{
+	repoPaths: []RepoPath{},
+	repos:     map[string]*repo{},
 }
 
-// TODO: Use this instead of the server version.
-var store = NewStore()
-
-func (s *Store) SetRepoPaths(repos []RepoPath) {
+func (s *Cache) SetRepoPaths(repos []RepoPath) {
 	s.repoPaths = repos
 }
 
-func (s *Store) GetRepoPath(repoPath string) (RepoPath, bool) {
+func (s *Cache) GetRepoPath(repoPath string) (RepoPath, bool) {
 	i := slices.IndexFunc(
 		s.repoPaths, func(p RepoPath) bool {
 			return p.Path == repoPath
@@ -44,7 +40,7 @@ func (s *Store) GetRepoPath(repoPath string) (RepoPath, bool) {
 }
 
 // TODO: May be a better way than always run this.
-func (s *Store) ensureRepo(repoPath string) *repo {
+func (s *Cache) ensureRepo(repoPath string) *repo {
 	r, found := s.repos[repoPath]
 	if found {
 		return r
@@ -61,23 +57,23 @@ func (s *Store) ensureRepo(repoPath string) *repo {
 	return r
 }
 
-func (s *Store) SetConfig(repoPath string, c Config) {
+func (s *Cache) SetConfig(repoPath string, c Config) {
 	r := s.ensureRepo(repoPath)
 	r.config = c
 }
 
-func (s *Store) GetConfig(repoPath string) Config {
+func (s *Cache) GetConfig(repoPath string) Config {
 	r := s.ensureRepo(repoPath)
 	return r.config
 }
 
-func (s *Store) SetCommitsAndRefs(repoPath string, c CommitsAndRefs) {
+func (s *Cache) SetCommitsAndRefs(repoPath string, c CommitsAndRefs) {
 	r := s.ensureRepo(repoPath)
 	r.commits = c.Commits
 	r.refs = c.Refs
 }
 
-func (s *Store) GetCommitsAndRefs(repoPath string) CommitsAndRefs {
+func (s *Cache) GetCommitsAndRefs(repoPath string) CommitsAndRefs {
 	r := s.ensureRepo(repoPath)
 	return CommitsAndRefs{Commits: r.commits, Refs: r.refs}
 }

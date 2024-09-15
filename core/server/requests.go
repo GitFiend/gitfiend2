@@ -3,8 +3,6 @@ package server
 import (
 	"encoding/json"
 	"gitfiend2/core/git"
-	"os"
-	"path"
 )
 
 func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
@@ -50,32 +48,14 @@ func reqGitVersion(_ ReqOptions) git.VersionInfo {
 	return git.Version
 }
 
-//func reqScanWorkspace(options git.ScanOptions) []string {
-//	res := Store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
-//
-//	return shared.Map(
-//		res, func(r git.RepoPath) string {
-//			return r.Path
-//		},
-//	)
-//}
-
 func reqRepoStatus(o ReqOptions) git.RepoStatus {
-	return Store.LoadRepoStatus(o.RepoPath)
+	return git.LoadRepoStatus(o.RepoPath)
 }
 
 func isRebaseInProgress(options ReqOptions) bool {
-	p, found := Store.GetRepoPath(options.RepoPath)
-
-	if found {
-		file := path.Join(p.GitPath, "rebase-merge")
-		_, err := os.Stat(file)
-		// Assume the file doesn't exist if we get an error.
-		return err == nil
-	}
-	return false
+	return git.IsRebaseInProgress(options.RepoPath)
 }
 
 func loadCommitsAndRefs(o git.ReqCommitsOptions) git.CommitsAndRefs {
-	return Store.LoadCommitsAndRefs(o)
+	return git.LoadCommitsAndRefs(o)
 }

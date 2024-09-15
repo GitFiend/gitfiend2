@@ -20,21 +20,21 @@ type CommitsAndRefs struct {
 	Refs    []RefInfo `json:"refs"`
 }
 
-func (s *Store) LoadCommitsAndRefs(o ReqCommitsOptions) CommitsAndRefs {
-	res := s.loadCommitsUnfiltered(o.RepoPath, o.NumCommits, o.Fast, o.SkipStashes)
+func LoadCommitsAndRefs(o ReqCommitsOptions) CommitsAndRefs {
+	res := loadCommitsUnfiltered(o.RepoPath, o.NumCommits, o.Fast, o.SkipStashes)
 
 	// TODO: Filters.
 	return res
 }
 
-func (s *Store) loadCommitsUnfiltered(
+func loadCommitsUnfiltered(
 	repoPath string,
 	numCommits int,
 	cacheOnly bool,
 	skipStashes bool,
 ) CommitsAndRefs {
 	if cacheOnly {
-		return s.GetCommitsAndRefs(repoPath)
+		return cache.GetCommitsAndRefs(repoPath)
 	}
 
 	var commitInfo []CommitInfo
@@ -65,19 +65,19 @@ func (s *Store) loadCommitsUnfiltered(
 		)
 	}
 
-	commits, refs := s.convertCommitInfo(commitInfo, repoPath)
-	refs = s.finishRefInfoProperties(refs, repoPath)
+	commits, refs := convertCommitInfo(commitInfo, repoPath)
+	refs = finishRefInfoProperties(refs, repoPath)
 
 	result := CommitsAndRefs{
 		Commits: commits,
 		Refs:    refs,
 	}
 
-	s.SetCommitsAndRefs(repoPath, result)
+	cache.SetCommitsAndRefs(repoPath, result)
 	return result
 }
 
-func (s *Store) convertCommitInfo(info []CommitInfo, repoPath string) (
+func convertCommitInfo(info []CommitInfo, repoPath string) (
 	[]Commit,
 	[]RefInfo,
 ) {
@@ -93,7 +93,7 @@ func (s *Store) convertCommitInfo(info []CommitInfo, repoPath string) (
 		}
 		commits[i] = convertCommit(c)
 	}
-	return commits, s.finishRefInfoProperties(refs, repoPath)
+	return commits, finishRefInfoProperties(refs, repoPath)
 }
 
 func convertCommit(info CommitInfo) Commit {
@@ -113,8 +113,8 @@ func convertCommit(info CommitInfo) Commit {
 	}
 }
 
-func (s *Store) finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
-	c := s.GetConfig(repoPath)
+func finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
+	c := cache.GetConfig(repoPath)
 
 	for _, ref := range refs {
 		if ref.RemoteName == "" {

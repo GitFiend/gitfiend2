@@ -16,7 +16,7 @@ type ScanOptions struct {
 }
 
 func ReqScanWorkspace(options ScanOptions) []string {
-	res := store.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
+	res := cache.ScanWorkspace(options.RepoPath, options.WorkspacesEnabled)
 
 	return shared.Map(
 		res, func(r RepoPath) string {
@@ -25,7 +25,7 @@ func ReqScanWorkspace(options ScanOptions) []string {
 	)
 }
 
-func (s *Store) ScanWorkspace(repoPath string, workspacesEnabled bool) []RepoPath {
+func (s *Cache) ScanWorkspace(repoPath string, workspacesEnabled bool) []RepoPath {
 	repos := scanWorkspace(repoPath, workspacesEnabled)
 	s.SetRepoPaths(repos)
 	return repos

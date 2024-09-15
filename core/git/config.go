@@ -12,7 +12,7 @@ type Config struct {
 	Submodules map[string]string `json:"submodules"`
 }
 
-func (s *Store) LoadFullConfig(repoPath string) Config {
+func (s *Cache) LoadFullConfig(repoPath string) Config {
 	c, err := s.loadConfigFromDisk(repoPath)
 	if err != nil {
 		panic(err)
@@ -22,7 +22,7 @@ func (s *Store) LoadFullConfig(repoPath string) Config {
 	return c
 }
 
-func (s *Store) loadConfigFromDisk(repoPath string) (Config, error) {
+func (s *Cache) loadConfigFromDisk(repoPath string) (Config, error) {
 	repo, ok := s.GetRepoPath(repoPath)
 	if !ok {
 		return Config{}, fmt.Errorf("couldn't load config for %s", repoPath)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"gitfiend2/core/git"
 	"io"
 	"net"
 	"net/http"
@@ -15,7 +14,7 @@ import (
 const port = ":29998"
 
 // TODO: Delete this. Caching is now internal to git package?
-var Store = git.NewStore()
+//var Store = git.NewStore()
 
 // StartServer
 // This is a server for testing against the current Rust implementation.

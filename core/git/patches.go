@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (s *Store) LoadPatches(repoPath string, commits []Commit) map[string][]Patch {
+func (s *Cache) LoadPatches(repoPath string, commits []Commit) map[string][]Patch {
 	var (
 		commitsWithoutPatches         []Commit
 		stashesOrMergesWithoutPatches []Commit
@@ -120,7 +120,7 @@ func loadPatchesForCommit(repoPath string, commit Commit) []Patch {
 	return nil
 }
 
-func (s *Store) loadPatchesCache(repoPath string) (map[string][]Patch, bool) {
+func (s *Cache) loadPatchesCache(repoPath string) (map[string][]Patch, bool) {
 	r := s.ensureRepo(repoPath)
 	if len(r.patches) > 0 {
 		return r.patches, true

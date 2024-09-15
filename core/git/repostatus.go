@@ -1,17 +1,32 @@
 package git
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"path"
+)
 
 type RepoStatus struct {
 	Config `json:"config"`
 }
 
-func (s *Store) LoadRepoStatus(repoPath string) RepoStatus {
-	config := s.LoadFullConfig(repoPath)
-
-	id, name, ok := s.loadCurrentBranch(repoPath)
+func LoadRepoStatus(repoPath string) RepoStatus {
+	config := cache.LoadFullConfig(repoPath)
+	id, name, ok := cache.loadCurrentBranch(repoPath)
 
 	fmt.Println(id, name, ok)
 
 	return RepoStatus{Config: config}
+}
+
+func IsRebaseInProgress(repoPath string) bool {
+	p, found := cache.GetRepoPath(repoPath)
+
+	if found {
+		file := path.Join(p.GitPath, "rebase-merge")
+		_, err := os.Stat(file)
+		// Assume the file doesn't exist if we get an error.
+		return err == nil
+	}
+	return false
 }

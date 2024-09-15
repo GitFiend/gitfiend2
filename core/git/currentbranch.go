@@ -8,7 +8,7 @@ import (
 )
 
 // TODO: Needs testing.
-func (s *Store) loadCurrentBranch(repoPath string) (id string, name string, ok bool) {
+func (s *Cache) loadCurrentBranch(repoPath string) (id string, name string, ok bool) {
 	rp, ok := s.GetRepoPath(repoPath)
 	if !ok {
 		return

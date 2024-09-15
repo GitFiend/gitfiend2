@@ -113,7 +113,7 @@ func pickTypeFromPatch(unStaged wippatchtype.Type, staged wippatchtype.Type) wip
 }
 
 func readMergeHead(repoPath string) (commitId string) {
-	rp, ok := store.GetRepoPath(repoPath)
+	rp, ok := cache.GetRepoPath(repoPath)
 	if !ok {
 		log.Warn("Called readMergeHead before the repoPath is initialised")
 		return ""

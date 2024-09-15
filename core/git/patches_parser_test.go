@@ -8,7 +8,7 @@ import (
 )
 
 const p1 = "src2/parser-lib/input.ts"
-const p2 = "src2/renderer-process/redux-store/repo-state/commits/commits-reducer.test.ts"
+const p2 = "src2/renderer-process/redux-cache/repo-state/commits/commits-reducer.test.ts"
 
 func TestPRenamePatch(t *testing.T) {
 	log := fmt.Sprintf("R100\000%s\000%s\000", p1, p2)
