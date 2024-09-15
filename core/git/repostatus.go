@@ -11,12 +11,19 @@ type RepoStatus struct {
 }
 
 func LoadRepoStatus(repoPath string) RepoStatus {
-
 	patches, err := LoadWipPatches(repoPath)
+	if err != nil {
+		panic("Failed to load patches")
+	}
+	fmt.Println(patches)
+
 	config := cache.LoadFullConfig(repoPath)
-	id, name, ok := cache.loadCurrentBranch(repoPath)
+	id, name, ok := loadCurrentBranch(repoPath)
 
 	fmt.Println(id, name, ok)
+
+	refs := readRefs(repoPath, name)
+	fmt.Println(refs)
 
 	return RepoStatus{Config: config}
 }
