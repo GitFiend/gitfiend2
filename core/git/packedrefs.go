@@ -65,6 +65,6 @@ var pOtherRef = p.Map(p.UntilLineEnd, func(result string) PackedRef {
 var pLines = p.Many(p.Or(pLocalRef, pRemoteRef, pOtherRef))
 
 func removeRemote(refPart string) (string, string) {
-	parts := strings.SplitN(refPart, "/", 1)
+	parts := strings.SplitN(refPart, "/", 2)
 	return parts[0], parts[1]
 }
