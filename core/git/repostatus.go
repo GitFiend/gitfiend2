@@ -1,13 +1,21 @@
 package git
 
 import (
-	"fmt"
 	"os"
 	"path"
 )
 
 type RepoStatus struct {
-	Config `json:"config"`
+	Patches        WipPatches `json:"patches"`
+	Config         Config     `json:"config"`
+	Branches       []string   `json:"branches"`
+	RemoteAhead    int        `json:"remoteAhead"`
+	RemoteBehind   int        `json:"remoteBehind"`
+	BranchName     string     `json:"branchName"`
+	HeadRefId      string     `json:"headRefId"`
+	LocalCommitId  string     `json:"localCommitId"`
+	RemoteCommitId string     `json:"remoteCommitId"`
+	State          string     `json:"state"`
 }
 
 func LoadRepoStatus(repoPath string) RepoStatus {
@@ -15,20 +23,94 @@ func LoadRepoStatus(repoPath string) RepoStatus {
 	if err != nil {
 		panic("Failed to load patches")
 	}
-	fmt.Println(patches)
 
 	config := cache.LoadFullConfig(repoPath)
-	id, name, ok := loadCurrentBranch(repoPath)
+	headId, currentBranch, ok := loadCurrentBranch(repoPath)
+	if !ok {
+		panic("Failed to load current branch")
+	}
 
-	fmt.Println(id, name, ok)
-
-	refs := readRefs(repoPath, name)
-	fmt.Println(refs)
+	refs := readRefs(repoPath, currentBranch)
 
 	packedRefs, ok := loadPackedRefs(repoPath)
-	fmt.Println(packedRefs)
+	if !ok {
+		// TODO: Is this actually ok?
+		panic("Failed to load packed refs")
+	}
 
-	return RepoStatus{Config: config}
+	if refs.localId == "" {
+		for _, r := range packedRefs {
+			if r.RemoteName == "" && r.Name == currentBranch {
+				refs.localId = r.CommitId
+				break
+			}
+		}
+	}
+	if refs.remoteId == "" {
+		for _, r := range packedRefs {
+			if r.RemoteName == currentBranch {
+				refs.remoteId = r.CommitId
+				break
+			}
+		}
+	}
+	for _, r := range packedRefs {
+		if r.Name != "" {
+			refs.others[r.Name] = true
+		}
+	}
+
+	if refs.localId != "" {
+		if refs.remoteId != "" {
+			remoteAhead := countCommitsBetweenFallback(repoPath, refs.localId, refs.remoteId)
+			remoteBehind := countCommitsBetweenFallback(repoPath, refs.remoteId, refs.localId)
+			var branches []string
+			for name := range refs.others {
+				branches = append(branches, name)
+			}
+
+			return RepoStatus{
+				Patches:        patches,
+				Config:         config,
+				RemoteAhead:    remoteAhead,
+				RemoteBehind:   remoteBehind,
+				Branches:       branches,
+				BranchName:     currentBranch,
+				HeadRefId:      headId,
+				LocalCommitId:  refs.localId,
+				RemoteCommitId: refs.remoteId,
+				State:          "Both",
+			}
+		}
+	}
+
+	var branches []string
+	for name := range refs.others {
+		branches = append(branches, name)
+	}
+
+	// TODO: Check this.
+	state := "Local"
+	if refs.localId == "" {
+		state = "Remote"
+	} else if refs.remoteId != "" {
+		state = "Both"
+	} else if refs.others["HEAD"] {
+		state = "Remote"
+	}
+
+	return RepoStatus{
+		Patches:        patches,
+		Config:         config,
+		RemoteAhead:    0,
+		RemoteBehind:   0,
+		Branches:       branches,
+		BranchName:     currentBranch,
+		HeadRefId:      headId,
+		LocalCommitId:  refs.localId,
+		RemoteCommitId: refs.remoteId,
+		State:          state,
+	}
 }
 
 func IsRebaseInProgress(repoPath string) bool {

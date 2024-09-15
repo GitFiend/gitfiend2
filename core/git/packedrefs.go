@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// TODO: Does this always exist? It may be normal for this to fail?
 func loadPackedRefs(repoPath string) ([]PackedRef, bool) {
 	repo, ok := cache.GetRepoPath(repoPath)
 	if !ok {
