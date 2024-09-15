@@ -25,6 +25,9 @@ func LoadRepoStatus(repoPath string) RepoStatus {
 	refs := readRefs(repoPath, name)
 	fmt.Println(refs)
 
+	packedRefs, ok := loadPackedRefs(repoPath)
+	fmt.Println(packedRefs)
+
 	return RepoStatus{Config: config}
 }
 
