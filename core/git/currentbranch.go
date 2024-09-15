@@ -8,8 +8,8 @@ import (
 )
 
 // TODO: Needs testing.
-func (s *Cache) loadCurrentBranch(repoPath string) (id string, name string, ok bool) {
-	rp, ok := s.GetRepoPath(repoPath)
+func loadCurrentBranch(repoPath string) (id string, name string, ok bool) {
+	rp, ok := cache.GetRepoPath(repoPath)
 	if !ok {
 		return
 	}
@@ -30,4 +30,14 @@ func (s *Cache) loadCurrentBranch(repoPath string) (id string, name string, ok b
 		return
 	}
 	return
+}
+
+func readRefs(repoPath, branchName string) {
+	rp, ok := cache.GetRepoPath(repoPath)
+	if !ok {
+		panic("Can't read refs without a repo path")
+	}
+
+	refsDir := path.Join(rp.GitPath, "refs")
+	headsDir := path.Join(refsDir, "heads")
 }

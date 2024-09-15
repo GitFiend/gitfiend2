@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"gitfiend2/core/git"
+	"github.com/labstack/gommon/log"
 )
 
 func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
@@ -20,6 +21,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 		res, ok = callFunc(reqRepoStatus, reqData)
 	case "load_commits_and_refs":
 		res, ok = callFunc(loadCommitsAndRefs, reqData)
+	case "load_wip_patches":
+		res, ok = callFunc(loadWipPatches, reqData)
 	}
 
 	if ok {
@@ -41,6 +44,14 @@ type ReqOptions struct {
 type ReqResult[T any] struct {
 	Ok  T
 	Err error
+}
+
+func loadWipPatches(o ReqOptions) git.WipPatches {
+	res, err := git.LoadWipPatches(o.RepoPath)
+	if err != nil {
+		log.Error(err)
+	}
+	return res
 }
 
 func reqGitVersion(_ ReqOptions) git.VersionInfo {

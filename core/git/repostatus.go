@@ -11,6 +11,8 @@ type RepoStatus struct {
 }
 
 func LoadRepoStatus(repoPath string) RepoStatus {
+
+	patches, err := LoadWipPatches(repoPath)
 	config := cache.LoadFullConfig(repoPath)
 	id, name, ok := cache.loadCurrentBranch(repoPath)
 
