@@ -26,7 +26,7 @@ func loadCurrentBranch(repoPath string) (id string, name string, ok bool) {
 	text := string(data)
 	i := strings.LastIndex(text, ":")
 	if i > 0 {
-		id = strings.TrimSpace(text[i:])
+		id = strings.TrimSpace(text[i+1:])
 		name = strings.Replace(id, "refs/heads/", "", 1)
 		ok = true
 		return
