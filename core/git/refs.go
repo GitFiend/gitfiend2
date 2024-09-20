@@ -82,6 +82,7 @@ var PTagRef = Map(
 
 var PHeadRef = Map(
 	And2(Word(`HEAD -> `), PRefName), func(result And2Result[string, refInfoPart]) refInfoPart {
+		result.R2.Head = true
 		return result.R2
 	},
 )

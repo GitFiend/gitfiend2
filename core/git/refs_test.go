@@ -2,6 +2,7 @@ package git
 
 import (
 	"gitfiend2/core/parser"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -58,12 +59,9 @@ func TestPTagRef(t *testing.T) {
 func TestPHeadRef(t *testing.T) {
 	res, ok := parser.ParseAll(PHeadRef, `HEAD -> refs/heads/master`)
 
-	if !ok {
-		t.Error(`Expected parse success`)
-	}
-	if res.Id != `refs/heads/master` {
-		t.Error(`Expected "refs/heads/master", got ` + res.Id)
-	}
+	assert.True(t, ok)
+	assert.Equal(t, `refs/heads/master`, res.Id)
+	assert.True(t, res.Head)
 }
 
 func TestPCommitRefs(t *testing.T) {

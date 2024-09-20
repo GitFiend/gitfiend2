@@ -5,19 +5,19 @@ import (
 	"gitfiend2/core/git/wippatchtype"
 )
 
-type RefType int
+type RefType string
 
 const (
-	Branch RefType = iota
-	Tag
-	Stash
+	Branch RefType = "Branch"
+	Tag            = "Tag"
+	Stash          = "Stash"
 )
 
-type RefLocation int
+type RefLocation string
 
 const (
-	Local RefLocation = iota
-	Remote
+	Local  RefLocation = "Local"
+	Remote             = "Remote"
 )
 
 // CommitInfo
