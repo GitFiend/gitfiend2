@@ -1,15 +1,15 @@
 package patchtype
 
-type Type rune
+type Type string
 
 const (
-	A Type = 'A'
-	C      = 'C'
-	B      = 'B'
-	D      = 'D'
-	M      = 'M'
-	R      = 'R'
-	T      = 'T'
-	U      = 'U'
-	X      = 'X'
+	A Type = "A"
+	C      = "C"
+	B      = "B"
+	D      = "D"
+	M      = "M"
+	R      = "R"
+	T      = "T"
+	U      = "U"
+	X      = "X"
 )

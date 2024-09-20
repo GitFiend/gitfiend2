@@ -1,16 +1,16 @@
 package wippatchtype
 
-type Type rune
+type Type string
 
 const (
-	Question Type = '?'
-	Empty         = ' '
-	Ignored       = '!'
-	A             = 'A'
-	C             = 'C'
-	D             = 'D'
-	M             = 'M'
-	R             = 'R'
-	U             = 'U'
-	T             = 'T'
+	Question Type = "?"
+	Empty         = " "
+	Ignored       = "!"
+	A             = "A"
+	C             = "C"
+	D             = "D"
+	M             = "M"
+	R             = "R"
+	U             = "U"
+	T             = "T"
 )
