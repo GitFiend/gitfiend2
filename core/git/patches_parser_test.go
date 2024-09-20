@@ -20,7 +20,7 @@ func TestPRenamePatch(t *testing.T) {
 			id:        fmt.Sprintf("%s-R100", p2),
 			oldFile:   p1,
 			newFile:   p2,
-			patchType: 'R',
+			patchType: "R",
 		}, res,
 	)
 }
@@ -35,7 +35,7 @@ func TestPCopyPatch(t *testing.T) {
 			id:        fmt.Sprintf("%s-C100", p2),
 			oldFile:   p1,
 			newFile:   p2,
-			patchType: 'C',
+			patchType: "C",
 		}, res,
 	)
 }
@@ -50,7 +50,7 @@ func TestPOtherPatch(t *testing.T) {
 			id:        fmt.Sprintf("%s-M", p2),
 			oldFile:   p2,
 			newFile:   p2,
-			patchType: 'M',
+			patchType: "M",
 		}, res,
 	)
 }

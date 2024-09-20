@@ -1,10 +1,8 @@
 package git
 
 import (
-	"fmt"
 	. "gitfiend2/core/parser"
 	"gitfiend2/core/shared"
-	"os"
 	"strconv"
 )
 
@@ -115,8 +113,6 @@ var PCommitRow = Map(
 var PCommits = Many(PCommitRow)
 
 func LoadCommits(repoPath string, num int) []CommitInfo {
-	fmt.Println(os.Environ())
-
 	options := RunOpts{
 		RepoPath: repoPath,
 		Args: []string{

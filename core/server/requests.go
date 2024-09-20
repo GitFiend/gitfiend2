@@ -25,6 +25,9 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 		res, ok = callFunc(loadWipPatches, reqData)
 	case "watch_repo":
 		ok = true
+	case "repo_has_changed":
+		ok = true
+		res = false
 	}
 
 	if ok {
@@ -69,6 +72,7 @@ func isRebaseInProgress(options ReqOptions) bool {
 	return git.IsRebaseInProgress(options.RepoPath)
 }
 
-func loadCommitsAndRefs(o git.ReqCommitsOptions) git.CommitsAndRefs {
-	return git.LoadCommitsAndRefs(o)
+func loadCommitsAndRefs(o git.ReqCommitsOptions) []any {
+	commitsAndRefs := git.LoadCommitsAndRefs(o)
+	return []any{commitsAndRefs.Commits, commitsAndRefs.Refs}
 }

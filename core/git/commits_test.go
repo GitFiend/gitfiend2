@@ -18,15 +18,10 @@ func TestPCommitRow(t *testing.T) {
 		End,
 	)
 
-	t.Run(
-		text, func(t *testing.T) {
-			_, ok := parser.ParseAll(PCommitRow, text)
+	c, ok := parser.ParseAll(PCommitRow, text)
 
-			if !ok {
-				t.Error("Expected success")
-			}
-		},
-	)
+	assert.True(t, ok)
+	assert.Equal(t, 1648863350000, c.Date.Ms)
 }
 
 func TestLoadCommits(t *testing.T) {
@@ -39,20 +34,11 @@ func TestLoadCommits(t *testing.T) {
 }
 
 func TestPDate(t *testing.T) {
-	p := parser.New(pDate, "1243 23")
-	res, ok := p.Run()
+	res, ok := parser.ParseAll(pDate, "1243 23")
 
-	assert.True(t, p.Finished())
-
-	if !ok {
-		t.Error("Expected success")
-	}
-	if res.Ms != 1243000 {
-		t.Error("Expected 1243000, got ", res.Ms)
-	}
-	if res.Adjustment != 23 {
-		t.Error("Expected 23, got ", res.Adjustment)
-	}
+	assert.True(t, ok)
+	assert.Equal(t, 1243000, res.Ms)
+	assert.Equal(t, 23, res.Adjustment)
 }
 
 func TestSliceExpectations(t *testing.T) {

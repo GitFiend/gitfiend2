@@ -130,7 +130,7 @@ var pOtherPatch = p.Map(
 
 func makeFromOther(res p.And3Result[patchtype.Type, string, string]) patchData {
 	return patchData{
-		id:        fmt.Sprintf("%s-%c", res.R3, res.R1),
+		id:        fmt.Sprintf("%v-%v", res.R3, res.R1),
 		patchType: res.R1,
 		oldFile:   res.R3,
 		newFile:   res.R3,
