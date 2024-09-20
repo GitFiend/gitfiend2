@@ -48,7 +48,7 @@ func LoadRepoStatus(repoPath string) RepoStatus {
 	}
 	if refs.remoteId == "" {
 		for _, r := range packedRefs {
-			if r.RemoteName == currentBranch {
+			if r.Name == currentBranch {
 				refs.remoteId = r.CommitId
 				break
 			}
