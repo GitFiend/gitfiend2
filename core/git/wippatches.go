@@ -41,7 +41,7 @@ func LoadWipPatches(repoPath string) (WipPatches, error) {
 		patches, haveConflict := getPatchesFromInfo(info)
 		if haveConflict {
 			id := readMergeHead(repoPath)
-			return WipPatches{Patches: patches, ConflictCommitId: id}, nil
+			return WipPatches{Patches: patches, ConflictCommitId: &id}, nil
 		}
 
 		return WipPatches{Patches: patches}, nil

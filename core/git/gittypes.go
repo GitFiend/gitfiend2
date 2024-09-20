@@ -92,7 +92,7 @@ type WipPatch struct {
 	NewFile      string            `json:"newFile"`
 	PatchType    wippatchtype.Type `json:"patchType"`
 	StagedType   wippatchtype.Type `json:"stagedType"`
-	UnstagedType wippatchtype.Type `json:"unstagedType"`
+	UnstagedType wippatchtype.Type `json:"unStagedType"`
 	Conflicted   bool              `json:"conflicted"`
 	Id           string            `json:"id"`
 	IsImage      bool              `json:"isImage"`
@@ -100,5 +100,5 @@ type WipPatch struct {
 
 type WipPatches struct {
 	Patches          []WipPatch `json:"patches"`
-	ConflictCommitId string     `json:"conflictCommitId"`
+	ConflictCommitId *string    `json:"conflict_commit_id"`
 }

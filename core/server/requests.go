@@ -23,6 +23,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 		res, ok = callFunc(loadCommitsAndRefs, reqData)
 	case "load_wip_patches":
 		res, ok = callFunc(loadWipPatches, reqData)
+	case "watch_repo":
+		ok = true
 	}
 
 	if ok {
