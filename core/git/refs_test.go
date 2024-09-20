@@ -8,52 +8,31 @@ import (
 
 func TestGetRefLocation(t *testing.T) {
 	origin := getRefLocation([]string{"refs", "heads", "commit-list-experiments"})
-
-	if origin != Local {
-		t.Error("Expected local ref")
-	}
+	assert.Equal(t, "Local", string(origin))
 }
 
 func TestGetRefShortName(t *testing.T) {
 	n1 := getShortName([]string{"refs", "heads", "feature", "dialogs"})
-
-	if n1 != "feature/dialogs" {
-		t.Error(`Expected "feature/dialogs"`)
-	}
+	assert.Equal(t, "feature/dialogs", n1)
 
 	n2 := getShortName([]string{"refs", "remotes", "origin", "git-lib"})
-
-	if n2 != "git-lib" {
-		t.Error(`Expected "git-lib"`)
-	}
+	assert.Equal(t, "git-lib", n2)
 }
 
 func TestGetRemoteName(t *testing.T) {
-	if getRemoteName([]string{"refs", "remotes", "origin", "git-lib"}) != "origin" {
-		t.Error(`Expected "origin"`)
-	}
-	if getRemoteName([]string{"refs", "heads", "feature", "dialogs"}) != "" {
-		t.Error(`Expected no remote for ref`)
-	}
-	if getRemoteName([]string{"refs", "tags", "hello"}) != "" {
-		t.Error(`Expected no remote`)
-	}
+	assert.Equal(t, "origin", getRemoteName([]string{"refs", "remotes", "origin", "git-lib"}))
+	assert.Equal(t, "", getRemoteName([]string{"refs", "heads", "feature", "dialogs"}))
+	assert.Equal(t, "", getRemoteName([]string{"refs", "heads", "feature", "dialogs"}))
 }
 
 func TestPRefName(t *testing.T) {
 	_, ok := parser.ParseAll(PRefName, "refs/heads/git-lib")
-
-	if !ok {
-		t.Error(`Expected parser success`)
-	}
+	assert.True(t, ok)
 }
 
 func TestPTagRef(t *testing.T) {
 	_, ok := parser.ParseAll(PTagRef, `tag: refs/tags/v0.11.2`)
-
-	if !ok {
-		t.Error(`Expected parser success`)
-	}
+	assert.True(t, ok)
 }
 
 func TestPHeadRef(t *testing.T) {
@@ -66,18 +45,10 @@ func TestPHeadRef(t *testing.T) {
 
 func TestPCommitRefs(t *testing.T) {
 	a := `(HEAD -> refs/heads/master, refs/remotes/origin/master, refs/remotes/origin/HEAD)`
-
 	res, ok := parser.ParseAll(PCommitRefs, a)
-
-	if !ok {
-		t.Error(`Expected success`)
-	}
-	if len(res) != 3 {
-		t.Error(`Expected 3 refs`)
-	}
-	if res[1].Id != `refs/remotes/origin/master` {
-		t.Error(`Expected 2nd ref id match`)
-	}
+	assert.True(t, ok)
+	assert.Equal(t, 3, len(res))
+	assert.Equal(t, `refs/remotes/origin/master`, res[1].Id)
 }
 
 func TestPOptionalRefs(t *testing.T) {

@@ -66,7 +66,7 @@ func loadCommitsUnfiltered(
 	}
 
 	commits, refs := convertCommitInfo(commitInfo, repoPath)
-	refs = finishRefInfoProperties(refs, repoPath)
+	//refs = finishRefInfoProperties(refs, repoPath)
 
 	result := CommitsAndRefs{
 		Commits: commits,
@@ -116,7 +116,8 @@ func convertCommit(info CommitInfo) Commit {
 func finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
 	c := cache.GetConfig(repoPath)
 
-	for _, ref := range refs {
+	for i := range refs {
+		ref := &refs[i]
 		if ref.RemoteName == "" {
 			ref.RemoteName = c.GetRemoteForBranch(ref.ShortName)
 		}
@@ -126,7 +127,7 @@ func finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
 	return refs
 }
 
-func getSiblingIdForRef(ref RefInfo, refs []RefInfo) string {
+func getSiblingIdForRef(ref *RefInfo, refs []RefInfo) string {
 	if ref.Location == Remote {
 		local, ok := shared.Find(
 			refs, func(r RefInfo) bool {
@@ -136,6 +137,7 @@ func getSiblingIdForRef(ref RefInfo, refs []RefInfo) string {
 		if ok {
 			return local.Id
 		}
+		return ""
 	}
 	remote, ok := shared.Find(
 		refs, func(r RefInfo) bool {
