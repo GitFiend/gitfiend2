@@ -12,7 +12,7 @@ import (
 
 func TestPCommitRow(t *testing.T) {
 	text := fmt.Sprintf(
-		"Toby; sugto555@gmail.com; 1648863350 +1300; dd5733ad96082f0f33164bd1e2d72f7540bf7d9f;"+
+		"Firstname Lastname; somewords123@gmail.com; 1648863350 +1300; dd5733ad96082f0f33164bd1e2d72f7540bf7d9f;"+
 			" 2e8966986f620f491c34e6243a546d85dd2322e0; Write commit row parser. Added necessary new git types. %s;"+
 			"  (HEAD -> refs/heads/master, refs/remotes/origin/master)",
 		End,
@@ -22,6 +22,7 @@ func TestPCommitRow(t *testing.T) {
 
 	assert.True(t, ok)
 	assert.Equal(t, 1648863350000, c.Date.Ms)
+	assert.Equal(t, "Firstname Lastname", c.Author)
 }
 
 func TestLoadCommits(t *testing.T) {
@@ -53,30 +54,19 @@ func TestPParents(t *testing.T) {
 		"2 parents", func(t *testing.T) {
 			h1 := "914aca5d9be2674304564e83efdcba92267dd7f9"
 			h2 := "505586ea2ec4431a462d9e37cff7750923b199f0"
-			var text = h1 + " " + h2
+			text := h1 + " " + h2
 
 			res, ok := parser.ParseAll(PParents, text)
-
-			if !ok {
-				t.Error(`Failed to parse ` + text)
-			}
-			if res[0] != h1 {
-				t.Error(`Failed to get ` + h1)
-			}
-			if res[1] != h2 {
-				t.Error(`Failed to get ` + h2)
-			}
+			assert.True(t, ok)
+			assert.Equal(t, h1, res[0])
+			assert.Equal(t, h2, res[1])
 		},
 	)
 
 	t.Run(
 		"no parents", func(t *testing.T) {
-
 			_, ok := parser.ParseAll(PParents, "")
-
-			if !ok {
-				t.Error(`Expected success when there's no parent hashes to parse.'`)
-			}
+			assert.True(t, ok)
 		},
 	)
 }
@@ -94,12 +84,8 @@ func TestPMessage(t *testing.T) {
 	t.Run(
 		`ParseAll realistic message`, func(t *testing.T) {
 			text := fmt.Sprintf(`Write commit row parser. Added necessary new git types. %s`, End)
-
 			_, ok := parser.ParseAll(PMessage, text)
-
-			if !ok {
-				t.Error()
-			}
+			assert.True(t, ok)
 		},
 	)
 }

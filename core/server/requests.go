@@ -54,7 +54,7 @@ type ReqResult[T any] struct {
 func loadWipPatches(o ReqOptions) git.WipPatches {
 	res, err := git.LoadWipPatches(o.RepoPath)
 	if err != nil {
-		slog.Error("loadWipPatches: ", err)
+		slog.Error(err.Error())
 	}
 	return res
 }

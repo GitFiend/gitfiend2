@@ -57,21 +57,24 @@ func loadCommitsUnfiltered(
 		commitInfo, stashes = <-reqCommits, <-reqStashes
 		commitInfo = append(commitInfo, stashes...)
 
-		// TODO: Check this.
 		slices.SortFunc(
 			commitInfo, func(a, b CommitInfo) int {
-				return cmp.Compare(a.StashId, b.StashId)
+				if a.StashId != "" || b.StashId != "" {
+					return cmp.Compare(b.Date.Ms, a.Date.Ms)
+				}
+				return 0
 			},
 		)
 	}
 
 	commits, refs := convertCommitInfo(commitInfo, repoPath)
-	//refs = finishRefInfoProperties(refs, repoPath)
 
 	result := CommitsAndRefs{
 		Commits: commits,
 		Refs:    refs,
 	}
+
+	// TODO: Set indices on commits.
 
 	cache.SetCommitsAndRefs(repoPath, result)
 	return result

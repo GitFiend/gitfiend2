@@ -18,7 +18,7 @@ func loadPackedRefs(repoPath string) ([]PackedRef, bool) {
 	packedDir := path.Join(repo.GitPath, "packed-refs")
 	bytes, err := os.ReadFile(packedDir)
 	if err != nil {
-		slog.Error("loadPackedRefs: ", err)
+		slog.Error(err.Error())
 		return nil, false
 	}
 	text := string(bytes)

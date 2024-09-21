@@ -96,7 +96,7 @@ func loadPatchesForCommit(repoPath string, commit Commit) []Patch {
 		}
 	} else {
 		args = []string{
-			"diff", fmt.Sprintf("%s..%s", commit0Id, commit.Id),
+			"diff", fmt.Sprintf("%s..%s", commitId0, commit.Id),
 			"--no-color",
 			"--name-status",
 			"-z",

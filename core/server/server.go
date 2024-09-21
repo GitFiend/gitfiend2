@@ -13,11 +13,6 @@ import (
 // const port = ":0"
 const port = ":29998"
 
-// TODO: Delete this. Caching is now internal to git package?
-//var Store = git.NewStore()
-
-// StartServer
-// This is a server for testing against the current Rust implementation.
 func StartServer() {
 	http.HandleFunc(
 		"/f/{funcName}", func(writer http.ResponseWriter, req *http.Request) {

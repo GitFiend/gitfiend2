@@ -22,7 +22,8 @@ func LoadStashes(repoPath string) []CommitInfo {
 
 	commits, ok := parser.ParseAll(PCommits, res.Stdout)
 	if ok {
-		for i, c := range commits {
+		for i := range commits {
+			c := &commits[i]
 			c.StashId = fmt.Sprintf("refs/stash@{%d}", i)
 			c.IsMerge = false
 			c.Ref = nil
@@ -39,8 +40,8 @@ func LoadStashes(repoPath string) []CommitInfo {
 
 func tidyCommitMessage(message string) string {
 	parts := strings.Split(message, ":")
-	if len(parts) > 1 {
-		m := parts[1]
+	if len(parts) > 0 {
+		m := parts[0]
 		return strings.Replace(m, "WIP", "Stash", 1)
 	}
 	return "Stash"

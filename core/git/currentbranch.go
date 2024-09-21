@@ -90,7 +90,8 @@ func readLocalRefs(currentDir, startDir, branchName string, refs *refs) {
 func readRemoteRefs(currentDir, startDir, branchName string, refs *refs) {
 	entities, err := os.ReadDir(currentDir)
 	if err != nil {
-		panic("Can't read remote refs")
+		slog.Warn("Remote refs dir not found (" + currentDir + ")")
+		return
 	}
 
 	for _, e := range entities {
