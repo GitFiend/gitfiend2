@@ -2,7 +2,7 @@ package git
 
 import (
 	"fmt"
-	"github.com/labstack/gommon/log"
+	"log/slog"
 	"os"
 	"path"
 	"slices"
@@ -136,7 +136,7 @@ func getRefNameFromPath(filePath, repoDir string) string {
 func readIdFromRefPath(refPath string) string {
 	bytes, err := os.ReadFile(refPath)
 	if err != nil {
-		log.Error("Failed to read " + refPath + " for id")
+		slog.Error("Failed to read " + refPath + " for id")
 	}
 	text := string(bytes)
 	return strings.TrimSpace(text)
@@ -145,7 +145,7 @@ func readIdFromRefPath(refPath string) string {
 func readHeadFile(filePath string) string {
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Error("Failed to read" + filePath)
+		slog.Error("Failed to read" + filePath)
 	}
 
 	text := string(bytes)
@@ -155,6 +155,6 @@ func readHeadFile(filePath string) string {
 		return strings.TrimSpace(p)
 	}
 
-	log.Error("Didn't find ':' in the head file")
+	slog.Error("Didn't find ':' in the head file")
 	return ""
 }

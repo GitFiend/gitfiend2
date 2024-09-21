@@ -2,7 +2,7 @@ package git
 
 import (
 	p "gitfiend2/core/parser"
-	"github.com/labstack/gommon/log"
+	"log/slog"
 	"os"
 	"path"
 	"strings"
@@ -12,13 +12,13 @@ import (
 func loadPackedRefs(repoPath string) ([]PackedRef, bool) {
 	repo, ok := cache.GetRepoPath(repoPath)
 	if !ok {
-		log.Error("repo missing, so couldn't load packed refs")
+		slog.Error("repo missing, so couldn't load packed refs")
 		return nil, false
 	}
 	packedDir := path.Join(repo.GitPath, "packed-refs")
 	bytes, err := os.ReadFile(packedDir)
 	if err != nil {
-		log.Error(err)
+		slog.Error("loadPackedRefs: ", err)
 		return nil, false
 	}
 	text := string(bytes)

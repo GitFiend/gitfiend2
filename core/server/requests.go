@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/json"
 	"gitfiend2/core/git"
-	"github.com/labstack/gommon/log"
+	"log/slog"
 )
 
 func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
@@ -54,7 +54,7 @@ type ReqResult[T any] struct {
 func loadWipPatches(o ReqOptions) git.WipPatches {
 	res, err := git.LoadWipPatches(o.RepoPath)
 	if err != nil {
-		log.Error(err)
+		slog.Error("loadWipPatches: ", err)
 	}
 	return res
 }

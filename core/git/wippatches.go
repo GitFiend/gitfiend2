@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"gitfiend2/core/git/wippatchtype"
 	p "gitfiend2/core/parser"
-	"github.com/labstack/gommon/log"
+	"log/slog"
 	"os"
 	"path"
 	"slices"
@@ -115,7 +115,7 @@ func pickTypeFromPatch(unStaged wippatchtype.Type, staged wippatchtype.Type) wip
 func readMergeHead(repoPath string) (commitId string) {
 	rp, ok := cache.GetRepoPath(repoPath)
 	if !ok {
-		log.Warn("Called readMergeHead before the repoPath is initialised")
+		slog.Warn("Called readMergeHead before the repoPath is initialised")
 		return ""
 	}
 	bytes, err := os.ReadFile(path.Join(rp.GitPath, "MERGE_HEAD"))
