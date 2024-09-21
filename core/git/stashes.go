@@ -11,7 +11,7 @@ func LoadStashes(repoPath string) []CommitInfo {
 		"reflog",
 		"show",
 		"stash",
-		"-z",
+		//"-z",
 		"--decorate=full",
 		prettyFormatted,
 		"--date=raw",

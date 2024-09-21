@@ -3,11 +3,12 @@ package git
 import (
 	. "gitfiend2/core/parser"
 	"strings"
+	"unicode"
 )
 
 var refNameParser = TakeRuneWhile(
 	func(r rune) bool {
-		return !IsWhiteSpace(r) && r != ',' && r != '(' && r != ')'
+		return !unicode.IsSpace(r) && r != ',' && r != '(' && r != ')'
 	},
 )
 

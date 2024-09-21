@@ -3,6 +3,7 @@ package parser
 import (
 	"regexp"
 	"slices"
+	"unicode"
 )
 
 func Rune(c rune) Parser[rune] {
@@ -69,7 +70,7 @@ func Regex(re *regexp.Regexp) Parser[string] {
 
 func OptionalWhiteSpace[T any]() Parser[T] {
 	return func(in *Input) (T, bool) {
-		for !in.End() && IsWhiteSpace(in.NextRune()) {
+		for !in.End() && unicode.IsSpace(in.NextRune()) {
 			in.Advance()
 		}
 
@@ -85,12 +86,6 @@ func Optional[T any](parser Parser[T]) Parser[T] {
 		}
 		return *new(T), true
 	}
-}
-
-var Ws = OptionalWhiteSpace[string]()
-
-func IsWhiteSpace(val rune) bool {
-	return val == ' ' || val == '\n' || val == '\r' || val == '\t'
 }
 
 // RepSep Assumes separator has any amount of whitespace around it.

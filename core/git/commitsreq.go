@@ -57,7 +57,7 @@ func loadCommitsUnfiltered(
 		commitInfo, stashes = <-reqCommits, <-reqStashes
 		commitInfo = append(commitInfo, stashes...)
 
-		slices.SortFunc(
+		slices.SortStableFunc(
 			commitInfo, func(a, b CommitInfo) int {
 				if a.StashId != "" || b.StashId != "" {
 					return cmp.Compare(b.Date.Ms, a.Date.Ms)
@@ -68,6 +68,11 @@ func loadCommitsUnfiltered(
 	}
 
 	commits, refs := convertCommitInfo(commitInfo, repoPath)
+
+	for i := range commits {
+		c := &commits[i]
+		c.Index = i
+	}
 
 	result := CommitsAndRefs{
 		Commits: commits,
@@ -125,16 +130,22 @@ func finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
 			ref.RemoteName = c.GetRemoteForBranch(ref.ShortName)
 		}
 		ref.SiblingId = getSiblingIdForRef(ref, refs)
+
 	}
 
 	return refs
 }
 
 func getSiblingIdForRef(ref *RefInfo, refs []RefInfo) string {
+	if ref.RefType != Branch {
+		return ""
+	}
 	if ref.Location == Remote {
 		local, ok := shared.Find(
 			refs, func(r RefInfo) bool {
-				return r.Location == Local && r.ShortName == ref.ShortName
+				return r.RefType == Branch &&
+					r.Location == Local &&
+					r.ShortName == ref.ShortName
 			},
 		)
 		if ok {
@@ -142,9 +153,11 @@ func getSiblingIdForRef(ref *RefInfo, refs []RefInfo) string {
 		}
 		return ""
 	}
+
 	remote, ok := shared.Find(
 		refs, func(r RefInfo) bool {
-			return r.Location == Remote &&
+			return r.RefType == Branch &&
+				r.Location == Remote &&
 				r.ShortName == ref.ShortName &&
 				r.RemoteName == ref.RemoteName
 		},

@@ -4,6 +4,8 @@ import (
 	"unicode"
 )
 
+var Ws = OptionalWhiteSpace[string]()
+
 var SignedInt = Map(
 	And2(Or(Word("-"), Word("+"), Ws), UInt),
 	func(result And2Result[string, string]) string {
@@ -62,7 +64,7 @@ var StringLiteral = Map(
 var UntilNul = UntilParser(
 	ConditionalRune(
 		func(r rune) bool {
-			return unicode.IsControl(r) && !IsWhiteSpace(r)
+			return unicode.IsControl(r) && !unicode.IsSpace(r)
 		},
 	),
 )
