@@ -28,6 +28,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 	case "repo_has_changed":
 		ok = true
 		res = false
+	case "commit_ids_between_commits":
+		res, ok = callFunc(git.CommitIdsBetweenCommits, reqData)
 	}
 
 	if ok {

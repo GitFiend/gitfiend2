@@ -167,3 +167,13 @@ func getSiblingIdForRef(ref *RefInfo, refs []RefInfo) string {
 	}
 	return ""
 }
+
+type CommitDiffOpts struct {
+	RepoPath  string `json:"repoPath"`
+	CommitId1 string `json:"commitId1"`
+	CommitId2 string `json:"commitId2"`
+}
+
+func CommitIdsBetweenCommits(o CommitDiffOpts) []string {
+	return commitIdsBetweenCommits(o.RepoPath, o.CommitId1, o.CommitId2)
+}

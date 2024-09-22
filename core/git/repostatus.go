@@ -32,11 +32,7 @@ func LoadRepoStatus(repoPath string) RepoStatus {
 
 	refs := readRefs(repoPath, currentBranch)
 
-	packedRefs, ok := loadPackedRefs(repoPath)
-	if !ok {
-		// TODO: Is this actually ok?
-		panic("Failed to load packed refs")
-	}
+	packedRefs := loadPackedRefs(repoPath)
 
 	if refs.localId == "" {
 		for _, r := range packedRefs {

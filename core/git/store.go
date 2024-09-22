@@ -40,7 +40,7 @@ func (s *Cache) GetRepoPath(repoPath string) (RepoPath, bool) {
 }
 
 // TODO: May be a better way than always run this.
-func (s *Cache) ensureRepo(repoPath string) *repo {
+func (s *Cache) getRepo(repoPath string) *repo {
 	r, found := s.repos[repoPath]
 	if found {
 		return r
@@ -58,22 +58,22 @@ func (s *Cache) ensureRepo(repoPath string) *repo {
 }
 
 func (s *Cache) SetConfig(repoPath string, c Config) {
-	r := s.ensureRepo(repoPath)
+	r := s.getRepo(repoPath)
 	r.config = c
 }
 
 func (s *Cache) GetConfig(repoPath string) Config {
-	r := s.ensureRepo(repoPath)
+	r := s.getRepo(repoPath)
 	return r.config
 }
 
 func (s *Cache) SetCommitsAndRefs(repoPath string, c CommitsAndRefs) {
-	r := s.ensureRepo(repoPath)
+	r := s.getRepo(repoPath)
 	r.commits = c.Commits
 	r.refs = c.Refs
 }
 
 func (s *Cache) GetCommitsAndRefs(repoPath string) CommitsAndRefs {
-	r := s.ensureRepo(repoPath)
+	r := s.getRepo(repoPath)
 	return CommitsAndRefs{Commits: r.commits, Refs: r.refs}
 }

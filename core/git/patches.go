@@ -121,7 +121,7 @@ func loadPatchesForCommit(repoPath string, commit Commit) []Patch {
 }
 
 func (s *Cache) loadPatchesCache(repoPath string) (map[string][]Patch, bool) {
-	r := s.ensureRepo(repoPath)
+	r := s.getRepo(repoPath)
 	if len(r.patches) > 0 {
 		return r.patches, true
 	}

@@ -8,27 +8,26 @@ import (
 	"strings"
 )
 
-// TODO: Does this always exist? It may be normal for this to fail?
-func loadPackedRefs(repoPath string) ([]PackedRef, bool) {
+func loadPackedRefs(repoPath string) []PackedRef {
 	repo, ok := cache.GetRepoPath(repoPath)
 	if !ok {
 		slog.Error("repo missing, so couldn't load packed refs")
-		return nil, false
+		return nil
 	}
 	packedDir := path.Join(repo.GitPath, "packed-refs")
 	bytes, err := os.ReadFile(packedDir)
 	if err != nil {
 		slog.Error(err.Error())
-		return nil, false
+		return nil
 	}
 	text := string(bytes)
 
 	res, ok := p.ParseAll(pLines, text)
 	if ok {
-		return res, true
+		return res
 	}
 
-	return nil, false
+	return nil
 }
 
 type PackedRef struct {
