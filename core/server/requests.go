@@ -30,6 +30,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 		res = false
 	case "commit_ids_between_commits":
 		res, ok = callFunc(git.CommitIdsBetweenCommits, reqData)
+	case "get_un_pushed_commits":
+
 	}
 
 	if ok {
