@@ -130,7 +130,6 @@ func finishRefInfoProperties(refs []RefInfo, repoPath string) []RefInfo {
 			ref.RemoteName = c.GetRemoteForBranch(ref.ShortName)
 		}
 		ref.SiblingId = getSiblingIdForRef(ref, refs)
-
 	}
 
 	return refs

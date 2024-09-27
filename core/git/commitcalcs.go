@@ -127,11 +127,45 @@ func findCommitAncestors(commit Commit, commits map[string]Commit) map[string]bo
 	return ancestors
 }
 
-func getUnPushedCommits(repoPath string) {
+type UnPushedCommits struct {
+	// Commits that are un-pushed on this branch, but pushed on another.
+	ThisBranch []string `json:"thisBranch"`
+	// Commits that haven't been pushed period. These have more edit options available.
+	AllBranches []string `json:"allBranches"`
+}
+
+func GetUnPushedCommits(repoPath string) UnPushedCommits {
 	ids, found := getUnPushedCommitsComputed(repoPath)
 	if found {
-		fmt.Println(ids)
+		all, ok := getUniqueUnPushedCommits(repoPath, ids)
+		if ok {
+			return UnPushedCommits{
+				ThisBranch:  ids,
+				AllBranches: all,
+			}
+		}
+	} else {
+		slog.Warn("getUnpushedCommits: Refs not found in commits, fallback to git request.")
 	}
+
+	res, err := RunGit(RunOpts{
+		RepoPath: repoPath, Args: []string{
+			"log", "HEAD", "--not", "--remotes", "--pretty=format:%H",
+		},
+	})
+	if err != nil {
+		slog.Error(err.Error())
+		return UnPushedCommits{}
+	}
+
+	ids, ok := p.ParseAll(PIdList, res.Stdout)
+	if ok {
+		return UnPushedCommits{
+			AllBranches: ids,
+		}
+	}
+
+	return UnPushedCommits{}
 }
 
 func getUniqueUnPushedCommits(repoPath string, unPushedIds []string) ([]string, bool) {
@@ -198,7 +232,12 @@ func unPushed(
 				}
 			}
 		}
+	}
 
+	for _, id := range current.ParentIds {
+		if c, found := commits[id]; found {
+			unPushed(c, remoteId, commits, refs, unPushedIds, checked, unique)
+		}
 	}
 }
 

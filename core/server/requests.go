@@ -31,7 +31,7 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 	case "commit_ids_between_commits":
 		res, ok = callFunc(git.CommitIdsBetweenCommits, reqData)
 	case "get_un_pushed_commits":
-
+		res, ok = callFunc(getUnPushedCommits, reqData)
 	}
 
 	if ok {
@@ -79,4 +79,8 @@ func isRebaseInProgress(options ReqOptions) bool {
 func loadCommitsAndRefs(o git.ReqCommitsOptions) []any {
 	commitsAndRefs := git.LoadCommitsAndRefs(o)
 	return []any{commitsAndRefs.Commits, commitsAndRefs.Refs}
+}
+
+func getUnPushedCommits(o ReqOptions) git.UnPushedCommits {
+	return git.GetUnPushedCommits(o.RepoPath)
 }
