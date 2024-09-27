@@ -145,7 +145,7 @@ func GetUnPushedCommits(repoPath string) UnPushedCommits {
 			}
 		}
 	} else {
-		slog.Warn("getUnpushedCommits: Ref commit ids not found in commits, fallback to git request.")
+		slog.Warn("GetUnPushedCommits: Ref commit ids not found in commits, fallback to git request.")
 	}
 
 	res, err := RunGit(RunOpts{
@@ -224,15 +224,18 @@ func unPushed(
 	checked[current.Id] = true
 
 	if current.Id == remoteId {
-		for _, id := range current.Ref {
-			if r, found := refs[id]; found {
-				if r.RefType == Branch && r.Location == Remote {
-					return
-				} else if unPushedIds[current.Id] {
-					*unique = append(*unique, current.Id)
-				}
+		return
+	}
+	for _, id := range current.Ref {
+		if r, found := refs[id]; found {
+			if r.RefType == Branch && r.Location == Remote {
+				return
 			}
 		}
+	}
+
+	if unPushedIds[current.Id] {
+		*unique = append(*unique, current.Id)
 	}
 
 	for _, id := range current.ParentIds {
