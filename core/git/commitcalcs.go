@@ -32,7 +32,7 @@ func getCommitIdsBetweenCommitIds(
 	c1, have1 := commits[commitId1]
 	c2, have2 := commits[commitId2]
 
-	if have1 && have2 {
+	if !have1 || !have2 {
 		return nil, false
 	}
 
@@ -145,7 +145,7 @@ func GetUnPushedCommits(repoPath string) UnPushedCommits {
 			}
 		}
 	} else {
-		slog.Warn("getUnpushedCommits: Refs not found in commits, fallback to git request.")
+		slog.Warn("getUnpushedCommits: Ref commit ids not found in commits, fallback to git request.")
 	}
 
 	res, err := RunGit(RunOpts{
@@ -183,6 +183,7 @@ func getUniqueUnPushedCommits(repoPath string, unPushedIds []string) ([]string, 
 	for _, c := range repo.commits {
 		if c.Id == headRef.CommitId {
 			head = c
+			break
 		}
 	}
 
@@ -253,6 +254,9 @@ func getUnPushedCommitsComputed(repoPath string) (ids []string, found bool) {
 		return nil, false
 	}
 	remote, ok := findSiblingRef(head, repo.refs)
+	if !ok {
+		return nil, false
+	}
 
 	return getCommitIdsBetweenCommitIds(head.CommitId, remote.CommitId, commits)
 }

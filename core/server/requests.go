@@ -10,6 +10,8 @@ func handleFuncRequest(name string, reqData []byte) ([]byte, bool) {
 	var res any
 	var ok bool
 
+	slog.Info("Request: " + name)
+
 	switch name {
 	case "git_version":
 		res, ok = callFunc(reqGitVersion, reqData)
