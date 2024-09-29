@@ -25,3 +25,8 @@ The current parser does extra work than needed, so could be sped up a little.
 Tricky problem, though not sure how fast the current thing is. 
 We could run it always and use pack-refs to speed it up if there are tons of files.
 We could check if packed refs file has been modified? Not sure how fast os.Stat is vs just reading a smallish file is.
+
+## Ideas
+1. We don't need to load commits again if we already have the head commit.
+2. It may be better to load commits and cache than run countCommitsBetweenFallback twice?
+3. If we already have refs, why include them in our commit parsing?
