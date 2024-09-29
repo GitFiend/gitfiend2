@@ -1,8 +1,11 @@
 package git
 
 import (
+	"fmt"
+	"log/slog"
 	"os"
 	"path"
+	"time"
 )
 
 type RepoStatus struct {
@@ -21,18 +24,21 @@ type RepoStatus struct {
 func LoadRepoStatus(repoPath string) RepoStatus {
 	patches, err := LoadWipPatches(repoPath)
 	if err != nil {
+		slog.Error(fmt.Sprintf("Failed to load patches: %s", err))
 		panic("Failed to load patches")
 	}
 
 	config := cache.LoadFullConfig(repoPath)
 	headId, currentBranch, ok := loadCurrentBranch(repoPath)
 	if !ok {
+		slog.Error("Failed to load current branch")
 		panic("Failed to load current branch")
 	}
 
+	t := time.Now()
 	refs := readRefs(repoPath, currentBranch)
-
 	packedRefs := loadPackedRefs(repoPath)
+	fmt.Println("Read refs", time.Now().Sub(t))
 
 	if refs.localId == "" {
 		for _, r := range packedRefs {
@@ -58,8 +64,10 @@ func LoadRepoStatus(repoPath string) RepoStatus {
 
 	if refs.localId != "" {
 		if refs.remoteId != "" {
+			t = time.Now()
 			remoteAhead := countCommitsBetweenFallback(repoPath, refs.localId, refs.remoteId)
 			remoteBehind := countCommitsBetweenFallback(repoPath, refs.remoteId, refs.localId)
+			fmt.Println("Count commits between", time.Now().Sub(t))
 			var branches []string
 			for name := range refs.others {
 				branches = append(branches, name)
@@ -107,6 +115,7 @@ func LoadRepoStatus(repoPath string) RepoStatus {
 		RemoteCommitId: refs.remoteId,
 		State:          state,
 	}
+
 }
 
 func IsRebaseInProgress(repoPath string) bool {
