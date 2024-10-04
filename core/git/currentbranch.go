@@ -101,7 +101,7 @@ func readRemoteRefs(currentDir, startDir, branchName string, refs *refs) {
 			readRemoteRefs(p, startDir, branchName, refs)
 		} else if name[0] != '.' {
 			if name == "HEAD" {
-				if strings.HasSuffix(branchName, readHeadFile(p)) {
+				if strings.HasSuffix(readHeadFile(p), branchName) {
 					refs.remoteId = refs.localId
 				}
 			} else {
